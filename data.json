@@ -1,9 +1,6 @@
 {
-  "profile": {
-    "name": "Iky Shinicy",
-    "bio": "iky shinicy konten kreator",
-    "role": "Prompt Assets Creator"
-  },
+  "name": "RIZKY RERANZA",
+  "bio": "AI Creative Builder & Prompt Designer\nMembangun sistem kreatif dari ide menjadi karya digital.",
   "projects": [
     {
       "id": 1,
@@ -23,20 +20,5 @@
       "image": "https://placehold.co/600x400/090909/white",
       "link": "#"
     }
-  ],
-  "services": [
-    {
-      "title": "Prompt Pack",
-      "desc": "Template siap pakai."
-    },
-    {
-      "title": "Custom Identity",
-      "desc": "Visual branding unik."
-    },
-    {
-      "title": "AI Direction",
-      "desc": "Konsep konten lengkap."
-    }
-  ],
-  "bio": "ikyshinicy"
+  ]
 }
