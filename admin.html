@@ -3,111 +3,137 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IKY.PRO GitHub Engine</title>
+    <title>IKY.PRO GH-CORE FIXED</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
     <style>
         :root { --p: #0062ff; --bg: #f8fafc; --dark: #0f172a; }
-        body { font-family: 'Inter', sans-serif; background: var(--bg); margin: 0; display: flex; height: 100vh; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); margin: 0; display: flex; height: 100vh; overflow: hidden; }
+        
+        /* Login Screen */
+        #login-screen { position: fixed; inset: 0; background: var(--bg); z-index: 9999; display: flex; align-items: center; justify-content: center; }
+        .login-card { background: white; padding: 40px; border-radius: 24px; box-shadow: 0 20px 50px rgba(0,0,0,0.1); text-align: center; width: 320px; }
+
         .sidebar { width: 250px; background: var(--dark); color: white; display: flex; flex-direction: column; flex-shrink: 0; }
-        .logo { padding: 30px 25px; font-weight: 800; font-size: 20px; color: var(--p); border-bottom: 1px solid #1e293b; }
+        .logo { padding: 30px 25px; font-family: 'Space Grotesk'; font-size: 20px; color: var(--p); border-bottom: 1px solid #1e293b; }
         .nav-item { padding: 15px 25px; cursor: pointer; color: #94a3b8; display: flex; align-items: center; gap: 12px; }
         .nav-item.active { background: rgba(255,255,255,0.05); color: white; border-left: 4px solid var(--p); }
+
         .main { flex: 1; display: flex; overflow: hidden; }
         .editor { flex: 1; padding: 30px; overflow-y: auto; }
         .preview { width: 420px; background: #cbd5e1; display: flex; align-items: center; justify-content: center; border-left: 1px solid #ddd; }
+        
         .card { background: white; border-radius: 20px; padding: 25px; box-shadow: 0 10px 20px rgba(0,0,0,0.05); margin-bottom: 20px; }
-        input, textarea { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 10px; margin-top: 8px; box-sizing: border-box; }
+        input, textarea { width: 100%; padding: 14px; border: 1px solid #e2e8f0; border-radius: 12px; margin-top: 8px; box-sizing: border-box; }
         .btn { background: var(--p); color: white; border: none; padding: 16px; border-radius: 12px; cursor: pointer; font-weight: 700; width: 100%; margin-top: 10px; }
-        #phone { width: 310px; height: 620px; background: #000; border-radius: 40px; padding: 10px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); }
+        
+        #phone { width: 310px; height: 620px; background: #000; border-radius: 40px; padding: 10px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); border: 4px solid #334155; }
         #phone iframe { width: 100%; height: 100%; background: white; border-radius: 30px; border: none; }
     </style>
 </head>
 <body>
 
-<div class="sidebar">
-    <div class="logo">IKY.PRO GH-CORE</div>
-    <div class="nav-item active"><i class="fa fa-cog"></i> GitHub Setting</div>
-    <div class="nav-item" onclick="updateToken()"><i class="fa fa-key"></i> Set Token</div>
-</div>
-
-<div class="main">
-    <div class="editor">
-        <div class="card">
-            <h3>GitHub Data Control</h3>
-            <label>Site Name</label>
-            <input type="text" id="name" oninput="sync()">
-            <label style="margin-top:15px; display:block;">Bio / Description</label>
-            <textarea id="bio" rows="3" oninput="sync()"></textarea>
+    <div id="login-screen">
+        <div class="login-card">
+            <h2 style="font-family:'Space Grotesk';">IKY.PRO</h2>
+            <p style="color: #64748b; font-size: 14px; margin-bottom: 20px;">Verification Required</p>
+            <input type="password" id="pass-input" placeholder="Enter Password" style="text-align: center;" onkeypress="if(event.key==='Enter')login()">
+            <button class="btn" onclick="login()">UNLOCK SYSTEM</button>
         </div>
-        <button class="btn" onclick="saveToGH()"><i class="fa fa-upload"></i> SIMPAN KE GITHUB</button>
-        <p style="font-size: 11px; color: #64748b; margin-top: 15px; text-align: center;">
-            <i class="fa fa-info-circle"></i> Perubahan akan tampil di link github.io dalam 1-2 menit.
-        </p>
     </div>
 
-    <div class="preview">
-        <div id="phone"><iframe id="live"></iframe></div>
+    <div class="sidebar">
+        <div class="logo">IKY.PRO CORE</div>
+        <div class="nav-item active"><i class="fa fa-cog"></i> GitHub Config</div>
+        <div class="nav-item" onclick="updateToken()"><i class="fa fa-key"></i> Update Token</div>
     </div>
-</div>
 
-<script>
-    const REPO = "ikyshinicy/WEB-RIZKY-RERANZA";
-    let currentData = {};
+    <div class="main">
+        <div class="editor">
+            <div class="card">
+                <h3>Visual Identity</h3>
+                <label>Display Name</label>
+                <input type="text" id="name" oninput="sync()">
+                <label style="margin-top:15px; display:block;">Bio / Description</label>
+                <textarea id="bio" rows="3" oninput="sync()"></textarea>
+            </div>
+            <button class="btn" onclick="saveToGH()"><i class="fa fa-cloud-upload"></i> SAVE TO GITHUB</button>
+        </div>
+        <div class="preview">
+            <div id="phone"><iframe id="live"></iframe></div>
+        </div>
+    </div>
 
-    async function loadData() {
-        const token = localStorage.getItem('iky_gh_token');
-        if(!token) return alert("Klik 'Set Token' dulu!");
+    <script>
+        const REPO = "ikyshinicy/WEB-RIZKY-RERANZA";
+        let currentData = { sha: "" };
 
-        const res = await fetch(`https://api.github.com/repos/${REPO}/contents/data.json`, {
-            headers: { 'Authorization': `token ${token}` }
-        });
-        const json = await res.json();
-        currentData = JSON.parse(atob(json.content));
-        currentData.sha = json.sha;
+        function login() {
+            const pass = document.getElementById('pass-input').value;
+            if(pass === 'eky598939') {
+                document.getElementById('login-screen').style.display = 'none';
+                loadData();
+            } else {
+                alert("Password Salah, Tuan Iky!");
+            }
+        }
 
-        document.getElementById('name').value = currentData.name || "";
-        document.getElementById('bio').value = currentData.bio || "";
-        sync();
-    }
+        async function loadData() {
+            const token = localStorage.getItem('iky_gh_token');
+            if(!token) return updateToken();
 
-    function sync() {
-        const frame = document.getElementById('live').contentDocument;
-        const n = document.getElementById('name').value;
-        const b = document.getElementById('bio').value;
-        frame.open();
-        frame.write(`
-            <style>body{margin:0;font-family:sans-serif;background:#f8fafc;text-align:center;}
-            .h{background:#0062ff;color:white;padding:50px 20px;} h1{margin:0;font-size:24px;} p{opacity:0.8;font-size:14px;}</style>
-            <div class="h"><h1>${n}</h1><p>${b}</p></div>
-            <div style="padding:20px;color:#94a3b8;font-size:12px;">GitHub Preview Mode</div>
-        `);
-        frame.close();
-    }
+            try {
+                const res = await fetch(`https://api.github.com/repos/${REPO}/contents/data.json`, {
+                    headers: { 'Authorization': `token ${token}` }
+                });
+                const json = await res.json();
+                currentData = JSON.parse(atob(json.content));
+                currentData.sha = json.sha;
 
-    async function saveToGH() {
-        const token = localStorage.getItem('iky_gh_token');
-        currentData.name = document.getElementById('name').value;
-        currentData.bio = document.getElementById('bio').value;
+                document.getElementById('name').value = currentData.name || "";
+                document.getElementById('bio').value = currentData.bio || "";
+                sync();
+            } catch(e) {
+                console.error(e);
+                alert("Gagal ambil data. Cek Token GitHub Tuan!");
+            }
+        }
 
-        const res = await fetch(`https://api.github.com/repos/${REPO}/contents/data.json`, {
-            method: 'PUT',
-            headers: { 'Authorization': `token ${token}` },
-            body: JSON.stringify({
-                message: "Update via GH-CORE",
-                content: btoa(unescape(encodeURIComponent(JSON.stringify(currentData, null, 2)))),
-                sha: currentData.sha
-            })
-        });
-        if(res.ok) alert("Berhasil! Data tersimpan di GitHub.");
-    }
+        function sync() {
+            const frame = document.getElementById('live').contentDocument;
+            const n = document.getElementById('name').value;
+            const b = document.getElementById('bio').value;
+            frame.open();
+            frame.write(`
+                <style>body{margin:0;font-family:sans-serif;background:#f8fafc;text-align:center;}
+                .h{background:#0062ff;color:white;padding:50px 20px;} h1{margin:0;font-size:24px;} p{opacity:0.8;font-size:14px;}</style>
+                <div class="h"><h1>${n}</h1><p>${b}</p></div>
+                <div style="padding:20px;color:#94a3b8;font-size:12px;">Live GitHub Preview</div>
+            `);
+            frame.close();
+        }
 
-    function updateToken() {
-        const t = prompt("Masukkan GitHub Token:");
-        if(t) { localStorage.setItem('iky_gh_token', t); loadData(); }
-    }
+        async function saveToGH() {
+            const token = localStorage.getItem('iky_gh_token');
+            currentData.name = document.getElementById('name').value;
+            currentData.bio = document.getElementById('bio').value;
 
-    window.onload = loadData;
-</script>
+            const res = await fetch(`https://api.github.com/repos/${REPO}/contents/data.json`, {
+                method: 'PUT',
+                headers: { 'Authorization': `token ${token}` },
+                body: JSON.stringify({
+                    message: "Update via Admin CORE",
+                    content: btoa(unescape(encodeURIComponent(JSON.stringify(currentData, null, 2)))),
+                    sha: currentData.sha
+                })
+            });
+            if(res.ok) alert("Berhasil Terupdate ke GitHub!");
+        }
+
+        function updateToken() {
+            const t = prompt("Masukkan GitHub Token Tuan:");
+            if(t) { localStorage.setItem('iky_gh_token', t); location.reload(); }
+        }
+    </script>
 </body>
 </html>
