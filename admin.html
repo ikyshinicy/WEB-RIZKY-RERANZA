@@ -8,40 +8,32 @@
     <style>
         :root { --primary: #1877f2; --dark: #1c1e21; --bg: #f0f2f5; --white: #ffffff; }
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); margin: 0; display: flex; height: 100vh; overflow: hidden; }
-        
-        /* Sidebar */
         .sidebar { width: 200px; background: var(--dark); color: white; display: flex; flex-direction: column; flex-shrink: 0; }
         .nav-item { padding: 15px 20px; cursor: pointer; display: flex; align-items: center; gap: 10px; transition: 0.3s; color: #ced4da; font-size: 14px; }
         .nav-item:hover, .nav-item.active { background: var(--primary); color: white; }
-
-        /* Main Layout */
         .container { flex: 1; display: flex; overflow: hidden; }
         .editor { flex: 1; padding: 25px; overflow-y: auto; border-right: 1px solid #ddd; }
         .preview-pane { flex: 1; background: #e4e6eb; display: flex; flex-direction: column; }
-        .preview-header { background: #fff; padding: 10px; text-align: center; font-size: 12px; font-weight: bold; border-bottom: 1px solid #ddd; }
         #web-preview { flex: 1; border: none; background: white; margin: 20px; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
-
-        /* UI Components */
         .card { background: var(--white); padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); margin-bottom: 20px; }
         input, textarea, select { width: 100%; padding: 10px; margin: 8px 0 15px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; }
         .btn { padding: 12px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; }
         .btn-primary { background: var(--primary); color: white; }
-        .btn-danger { background: #dc3545; color: white; width: auto; padding: 5px 10px; }
-
+        .btn-danger { background: #dc3545; color: white; width: auto; padding: 5px 10px; cursor: pointer; }
+        #login-overlay { position: fixed; inset: 0; background: var(--bg); display: flex; justify-content: center; align-items: center; z-index: 1000; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
-        
-        #login-overlay { position: fixed; inset: 0; background: var(--bg); display: flex; justify-content: center; align-items: center; z-index: 1000; }
     </style>
 </head>
 <body>
 
     <div id="login-overlay">
         <div class="card" style="width: 320px; text-align: center;">
-            <h2>Admin Login</h2>
+            <h2 style="margin-bottom:20px;">Admin Login</h2>
             <input type="text" id="user" placeholder="Username">
             <input type="password" id="pass" placeholder="Password">
-            <button class="btn btn-primary" onclick="login()">MASUK KE DASHBOARD</button>
+            <button class="btn btn-primary" onclick="processLogin()">MASUK KE DASHBOARD</button>
+            <p id="err-msg" style="color:red; font-size:12px; margin-top:10px;"></p>
         </div>
     </div>
 
@@ -57,29 +49,116 @@
     <div class="container">
         <div class="editor">
             <div id="status"></div>
-
             <div id="tab-profile" class="tab-content active">
                 <div class="card">
                     <h3>Profil & Bio</h3>
                     <label>Nama Display</label>
                     <input type="text" id="upd-name" oninput="livePreview()">
-                    <label>Slogan / Bio</label>
+                    <label>Slogan / Bio Bisnis</label>
                     <textarea id="upd-bio" rows="4" oninput="livePreview()"></textarea>
-                    <button class="btn btn-primary" onclick="saveChanges()">PUBLISH PERUBAHAN BIO</button>
+                    <button class="btn btn-primary" onclick="saveChanges('bio')">PUBLISH PERUBAHAN BIO</button>
                 </div>
             </div>
-
             <div id="tab-add" class="tab-content">
                 <div class="card">
                     <h3>Tambah Konten Baru</h3>
-                    <label>Judul Karya</label>
                     <input type="text" id="p-title" placeholder="Nama Project">
-                    <label>Tipe Media</label>
-                    <select id="p-type" onchange="toggleHint()">
-                        <option value="image">Foto / Gambar (Link JPG/PNG)</option>
+                    <select id="p-type">
+                        <option value="image">Foto / Gambar</option>
                         <option value="video">Video (YouTube Link)</option>
                     </select>
-                    <label id="url-label">URL Link Media</label>
-                    <input type="text" id="p-img" placeholder="Paste link di sini...">
-                    <label>Tautan Eksternal (Opsional)</label>
-                    <input type="text" id="p-link" placeholder="Link WhatsApp/Detail
+                    <input type="text" id="p-img" placeholder="URL Link Gambar/YouTube">
+                    <input type="text" id="p-link" placeholder="Link WhatsApp (Opsional)">
+                    <button class="btn btn-primary" onclick="saveChanges('add')">TAMBAHKAN KE WEBSITE</button>
+                </div>
+            </div>
+            <div id="tab-list" class="tab-content">
+                <div class="card">
+                    <h3>Daftar Portofolio</h3>
+                    <div id="list-container">Memuat list...</div>
+                </div>
+            </div>
+            <div id="tab-token" class="tab-content">
+                <div class="card">
+                    <h3>GitHub Token API</h3>
+                    <p style="font-size:12px; color:gray;">Simpan token Tuan agar sistem bisa menulis data ke GitHub.</p>
+                    <input type="password" id="ghToken" placeholder="ghp_...">
+                    <button class="btn btn-primary" onclick="saveToken()">UPDATE TOKEN</button>
+                </div>
+            </div>
+        </div>
+        <div class="preview-pane">
+            <div style="padding:10px; text-align:center; font-size:12px; font-weight:bold; background:#fff; border-bottom:1px solid #ddd;">LIVE PREVIEW</div>
+            <iframe id="web-preview"></iframe>
+        </div>
+    </div>
+
+    <script>
+        const REPO = "ikyshinicy/WEB-RIZKY-RERANZA";
+        let dbData = { name: "", bio: "", projects: [] };
+
+        // LOGIN PROCESS
+        function processLogin() {
+            const u = document.getElementById('user').value;
+            const p = document.getElementById('pass').value;
+            if(u === 'admin' && p === 'eky598939') {
+                sessionStorage.setItem('iky_auth_pro', 'true');
+                document.getElementById('login-overlay').style.display = 'none';
+                initDashboard();
+            } else {
+                document.getElementById('err-msg').innerText = "Username atau Password Salah!";
+            }
+        }
+
+        function initDashboard() {
+            if(sessionStorage.getItem('iky_auth_pro')) {
+                document.getElementById('login-overlay').style.display = 'none';
+                loadDataFromGitHub();
+            }
+        }
+
+        window.onload = initDashboard;
+
+        function openTab(evt, tabName) {
+            document.querySelectorAll(".tab-content").forEach(t => t.classList.remove("active"));
+            document.querySelectorAll(".nav-item").forEach(n => n.classList.remove("active"));
+            document.getElementById(tabName).classList.add("active");
+            evt.currentTarget.classList.add("active");
+        }
+
+        async function loadDataFromGitHub() {
+            const token = localStorage.getItem('myGithubToken');
+            if(!token) return;
+            try {
+                const res = await fetch(`https://api.github.com/repos/${REPO}/contents/data.json`, {
+                    headers: { 'Authorization': `token ${token}` }
+                });
+                const json = await res.json();
+                dbData = JSON.parse(atob(json.content));
+                dbData.sha = json.sha;
+                document.getElementById('upd-name').value = dbData.name || "";
+                document.getElementById('upd-bio').value = dbData.bio || "";
+                livePreview();
+                renderList();
+            } catch (e) { console.error("Error loading data"); }
+        }
+
+        function livePreview() {
+            const preview = document.getElementById('web-preview').contentDocument;
+            const name = document.getElementById('upd-name').value;
+            const bio = document.getElementById('upd-bio').value;
+            let list = dbData.projects.map(p => `
+                <div style="border:1px solid #eee; margin-bottom:10px; border-radius:5px; overflow:hidden;">
+                    <img src="${p.image}" style="width:100%; height:80px; object-fit:cover;">
+                    <p style="font-size:10px; padding:5px; margin:0;">${p.title}</p>
+                </div>
+            `).join('');
+
+            preview.open();
+            preview.write(`
+                <body style="font-family:sans-serif; padding:15px; text-align:center;">
+                    <div style="background:#1877f2; color:white; padding:20px; border-radius:10px;">
+                        <h2 style="margin:0">${name || 'Nama Bisnis'}</h2>
+                        <p style="font-size:12px;">${bio || 'Bio/Slogan'}</p>
+                    </div>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:20px;">${
