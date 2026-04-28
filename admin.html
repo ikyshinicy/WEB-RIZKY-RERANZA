@@ -3,138 +3,92 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI-Ready CMS - Tuan Iky</title>
+    <title>Master Dashboard - Tuan Iky</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
     <style>
-        :root { --p: #0062ff; --p-soft: #e0ebff; --dark: #0f172a; --bg: #f8fafc; --card: #ffffff; }
-        [data-theme="dark"] { --bg: #020617; --card: #1e293b; --dark: #f8fafc; }
+        :root { --p: #0062ff; --bg: #f8fafc; --card: #ffffff; --text: #0f172a; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); margin: 0; display: flex; height: 100vh; overflow: hidden; }
         
-        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--dark); margin: 0; display: flex; height: 100vh; transition: 0.3s; }
-        
-        /* Sidebar */
-        .sidebar { width: 260px; background: var(--dark); color: white; display: flex; flex-direction: column; padding: 20px 0; }
-        .logo { padding: 0 25px 30px; font-family: 'Space Grotesk'; font-size: 22px; color: var(--p); letter-spacing: -1px; }
-        .nav-item { padding: 12px 25px; cursor: pointer; display: flex; align-items: center; gap: 12px; color: #94a3b8; transition: 0.2s; font-weight: 500; }
-        .nav-item:hover, .nav-item.active { color: white; background: rgba(255,255,255,0.05); border-right: 4px solid var(--p); }
+        .sidebar { width: 260px; background: #0f172a; color: white; display: flex; flex-direction: column; padding: 20px 0; }
+        .logo { padding: 0 25px 30px; font-family: 'Space Grotesk'; font-size: 22px; color: var(--p); }
+        .nav-item { padding: 12px 25px; cursor: pointer; display: flex; align-items: center; gap: 12px; color: #94a3b8; transition: 0.2s; }
+        .nav-item.active { color: white; background: rgba(255,255,255,0.05); border-right: 4px solid var(--p); }
 
-        /* Main Workspace */
         .workspace { flex: 1; display: flex; overflow: hidden; }
-        .editor-area { flex: 1.2; padding: 30px; overflow-y: auto; background: var(--bg); }
-        .preview-area { flex: 0.8; background: #e2e8f0; display: flex; flex-direction: column; padding: 20px; }
+        .editor-area { flex: 1.2; padding: 30px; overflow-y: auto; }
+        .preview-area { flex: 0.8; background: #cbd5e1; padding: 20px; display: flex; flex-direction: column; align-items: center; }
         
-        /* Components */
-        .glass-card { background: var(--card); border-radius: 16px; padding: 24px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); margin-bottom: 25px; border: 1px solid rgba(0,0,0,0.05); }
-        .input-group { margin-bottom: 20px; }
-        label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 8px; color: #64748b; }
-        input, select, textarea { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #e2e8f0; background: var(--bg); color: var(--dark); font-size: 14px; box-sizing: border-box; }
+        .glass-card { background: var(--card); border-radius: 16px; padding: 24px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 25px; border: 1px solid #e2e8f0; }
+        .input-group { margin-bottom: 15px; }
+        label { display: block; font-size: 12px; font-weight: 700; margin-bottom: 5px; color: #64748b; text-transform: uppercase; }
+        input, select, textarea { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #e2e8f0; font-size: 14px; box-sizing: border-box; }
         
-        .btn { padding: 14px 24px; border: none; border-radius: 10px; cursor: pointer; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.2s; width: 100%; }
+        .btn { padding: 14px; border: none; border-radius: 10px; cursor: pointer; font-weight: 600; width: 100%; transition: 0.2s; }
         .btn-p { background: var(--p); color: white; }
-        .btn-p:hover { opacity: 0.9; transform: translateY(-2px); }
-
-        /* Preview Frame */
-        #mobile-frame { width: 100%; height: 100%; background: white; border-radius: 30px; border: 8px solid #334155; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); overflow: hidden; }
-
+        
+        #mobile-frame { width: 360px; height: 640px; background: white; border-radius: 40px; border: 10px solid #1e293b; box-shadow: 0 25px 50px rgba(0,0,0,0.3); overflow: hidden; }
+        
         #login-screen { position: fixed; inset: 0; background: var(--bg); z-index: 10000; display: flex; align-items: center; justify-content: center; }
-        .tab-pane { display: none; animation: fadeIn 0.4s; }
+        .tab-pane { display: none; }
         .tab-pane.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
-<body data-theme="light">
+<body>
 
     <div id="login-screen">
-        <div class="glass-card" style="width: 380px; text-align: center;">
-            <div style="font-size: 40px; margin-bottom: 15px;">🧠</div>
-            <h2 style="font-family: 'Space Grotesk'; margin: 0 0 10px;">Otak Digital Login</h2>
-            <p style="color: #64748b; font-size: 14px; margin-bottom: 25px;">Verified Access for Tuan Iky</p>
-            <input type="password" id="adm-pass" placeholder="Enter Master Password" onkeypress="if(event.key==='Enter')auth()">
-            <button class="btn btn-p" onclick="auth()" style="margin-top: 15px;">UNLOCK SYSTEM</button>
+        <div class="glass-card" style="width: 350px; text-align: center;">
+            <h2 style="font-family: 'Space Grotesk';">Master Access</h2>
+            <input type="password" id="adm-pass" placeholder="Password Sistem" onkeypress="if(event.key==='Enter')auth()">
+            <button class="btn btn-p" onclick="auth()" style="margin-top: 15px;">LOGIN</button>
         </div>
     </div>
 
     <div class="sidebar" id="sidebar" style="display:none;">
-        <div class="logo">IKY.PRO <span style="font-size: 10px; vertical-align: top; color: gray;">v7</span></div>
-        <div class="nav-item active" onclick="tab(event, 'design')"><i class="fa fa-wand-magic-sparkles"></i> Design Engine</div>
-        <div class="nav-item" onclick="tab(event, 'content')"><i class="fa fa-folder-plus"></i> Content Manager</div>
-        <div class="nav-item" onclick="tab(event, 'database')"><i class="fa fa-database"></i> Media Library</div>
-        <div class="nav-item" onclick="tab(event, 'settings')"><i class="fa fa-gears"></i> Core Settings</div>
-        
-        <div style="margin-top: auto; padding: 20px;">
-            <button onclick="toggleTheme()" style="background:none; border:1px solid #334155; color:#94a3b8; padding:8px; border-radius:8px; width:100%; cursor:pointer;">
-                <i class="fa fa-moon"></i> Dark Mode
-            </button>
-        </div>
+        <div class="logo">PRIVATE.PRO</div>
+        <div class="nav-item active" onclick="tab(event, 'design')"><i class="fa fa-sliders"></i> Kontrol Visual</div>
+        <div class="nav-item" onclick="tab(event, 'content')"><i class="fa fa-plus-circle"></i> Tambah Media</div>
+        <div class="nav-item" onclick="tab(event, 'database')"><i class="fa fa-folder-open"></i> Database</div>
+        <div class="nav-item" onclick="saveKey()" style="margin-top:auto;"><i class="fa fa-key"></i> Update Token</div>
     </div>
 
     <div class="workspace" id="main" style="display:none;">
         <div class="editor-area">
-            <div id="alert-box"></div>
-
             <div id="design" class="tab-pane active">
                 <div class="glass-card">
-                    <h3>Visual Branding</h3>
+                    <h3>Konfigurasi Tampilan Real-Time</h3>
                     <div class="input-group">
-                        <label>Business Identity Name</label>
-                        <input type="text" id="biz-name" oninput="sync()">
+                        <label>Nama Display</label>
+                        <input type="text" id="biz-name" oninput="syncPreview()">
                     </div>
                     <div class="input-group">
-                        <label>Dynamic Bio / Slogan</label>
-                        <textarea id="biz-bio" rows="2" oninput="sync()"></textarea>
+                        <label>Bio/Slogan</label>
+                        <textarea id="biz-bio" rows="2" oninput="syncPreview()"></textarea>
                     </div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                        <div class="input-group">
-                            <label>Accent Color</label>
-                            <input type="color" id="biz-color" oninput="sync()">
+                    <div style="display: flex; gap: 15px;">
+                        <div style="flex:1">
+                            <label>Warna Tema</label>
+                            <input type="color" id="biz-color" oninput="syncPreview()">
                         </div>
-                        <div class="input-group">
-                            <label>Text Color</label>
-                            <input type="color" id="biz-text" oninput="sync()">
+                        <div style="flex:1">
+                            <label>Warna Teks</label>
+                            <input type="color" id="biz-text" oninput="syncPreview()">
                         </div>
                     </div>
                 </div>
+                <button class="btn btn-p" onclick="deploy()">UPDATE WEBSITE SEKARANG</button>
             </div>
 
             <div id="content" class="tab-pane">
                 <div class="glass-card">
-                    <h3>Smart Uploader</h3>
-                    <div class="input-group">
-                        <label>Project Title</label>
-                        <input type="text" id="post-title" placeholder="What is the name of this project?">
-                    </div>
-                    <div class="input-group">
-                        <label>Category</label>
-                        <select id="post-cat">
-                            <option value="Branding">Digital Branding</option>
-                            <option value="Printing">Printing / Cetak</option>
-                            <option value="Project">Web Project</option>
-                            <option value="Video">Video Assets</option>
-                        </select>
-                    </div>
-                    <div class="input-group">
-                        <label>Media Source</label>
-                        <select id="post-type" onchange="toggleSrc()">
-                            <option value="img">Upload Local File (Image)</option>
-                            <option value="yt">YouTube Link</option>
-                            <option value="url">External Website Link</option>
-                        </select>
-                    </div>
-                    
-                    <div id="src-file">
-                        <div style="border: 2px dashed #e2e8f0; padding: 30px; text-align: center; border-radius: 12px; cursor: pointer;" onclick="document.getElementById('file-in').click()">
-                            <i class="fa fa-cloud-arrow-up" style="font-size: 30px; color: var(--p);"></i>
-                            <p style="font-size: 13px; color: #64748b;">Click to upload image from Papua Galery</p>
-                            <input type="file" id="file-in" style="display:none;" onchange="processFile()">
-                        </div>
-                        <img id="up-preview" style="width:100%; height:120px; object-fit:cover; margin-top:15px; border-radius:8px; display:none;">
-                    </div>
-
-                    <div id="src-link" style="display:none;">
-                        <input type="text" id="post-url" placeholder="Paste URL here...">
-                    </div>
-
-                    <button class="btn btn-p" onclick="publish()" style="margin-top:20px;"><i class="fa fa-paper-plane"></i> DEPLOY TO CLOUD</button>
+                    <h3>Upload Konten Baru</h3>
+                    <input type="text" id="post-title" placeholder="Judul Konten">
+                    <select id="post-type" style="margin-top:10px;">
+                        <option value="image">Gambar/Foto</option>
+                        <option value="video">Link YouTube</option>
+                    </select>
+                    <input type="file" id="file-in" style="margin-top:10px;" onchange="handleFile()">
+                    <button class="btn btn-p" onclick="addPost()" style="margin-top:20px;">SIMPAN KE DRAFT</button>
                 </div>
             </div>
 
@@ -144,32 +98,18 @@
                     <div id="lib-list"></div>
                 </div>
             </div>
-
-            <div id="settings" class="tab-pane">
-                <div class="glass-card">
-                    <h3>System Config</h3>
-                    <div class="input-group">
-                        <label>GitHub API Key</label>
-                        <input type="password" id="gh-key" placeholder="ghp_xxxxxxxx">
-                    </div>
-                    <button class="btn btn-p" onclick="saveKey()">SAVE CONFIGURATION</button>
-                </div>
-            </div>
         </div>
 
         <div class="preview-area">
-            <div style="margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center;">
-                <span style="font-weight: 600; font-size: 14px;"><i class="fa fa-mobile-screen"></i> Mobile Simulation</span>
-                <span style="font-size: 11px; background: #22c55e; color: white; padding: 2px 8px; border-radius: 10px;">LIVE</span>
-            </div>
+            <div style="margin-bottom:10px; font-weight:800; font-size:12px;">LIVE MONITORING TAMPILAN WEB</div>
             <iframe id="mobile-frame"></iframe>
         </div>
     </div>
 
     <script>
         const REPO = "ikyshinicy/WEB-RIZKY-RERANZA";
-        let data = { config: {}, projects: [] };
-        let tempImg = "";
+        let db = { config: {}, projects: [] };
+        let currentFile = "";
 
         function auth() {
             if(document.getElementById('adm-pass').value === 'eky598939') {
@@ -177,11 +117,98 @@
                 document.getElementById('login-screen').style.display = 'none';
                 document.getElementById('sidebar').style.display = 'flex';
                 document.getElementById('main').style.display = 'flex';
-                init();
+                loadCloudData();
             }
         }
 
-        window.onload = () => { if(sessionStorage.getItem('iky_auth')) auth(); }
+        async function loadCloudData() {
+            const token = localStorage.getItem('iky_token');
+            if(!token) return;
+            const res = await fetch(`https://api.github.com/repos/${REPO}/contents/data.json`, {
+                headers: { 'Authorization': `token ${token}` }
+            });
+            const json = await res.json();
+            db = JSON.parse(atob(json.content));
+            db.sha = json.sha;
+            
+            // Masukkan data dari cloud ke form secara otomatis
+            document.getElementById('biz-name').value = db.name || "";
+            document.getElementById('biz-bio').value = db.bio || "";
+            document.getElementById('biz-color').value = (db.config && db.config.color) || "#0062ff";
+            document.getElementById('biz-text').value = (db.config && db.config.text) || "#ffffff";
+            
+            syncPreview(); renderLib();
+        }
+
+        function syncPreview() {
+            const frame = document.getElementById('mobile-frame').contentDocument;
+            const name = document.getElementById('biz-name').value;
+            const bio = document.getElementById('biz-bio').value;
+            const color = document.getElementById('biz-color').value;
+            const text = document.getElementById('biz-text').value;
+
+            let cards = db.projects.map(p => `
+                <div style="background:white; border-radius:12px; overflow:hidden; margin-bottom:15px; box-shadow:0 2px 5px rgba(0,0,0,0.1);">
+                    <img src="${p.image}" style="width:100%; height:120px; object-fit:cover;">
+                    <div style="padding:10px; font-weight:bold; font-size:13px;">${p.title}</div>
+                </div>
+            `).join('');
+
+            frame.open();
+            frame.write(`
+                <style>body{margin:0; font-family:sans-serif; background:#f1f5f9;}</style>
+                <div style="background:${color}; color:${text}; padding:40px 20px; text-align:center;">
+                    <h1 style="margin:0;">${name}</h1><p>${bio}</p>
+                </div>
+                <div style="padding:15px;">${cards}</div>
+            `);
+            frame.close();
+        }
+
+        function handleFile() {
+            const reader = new FileReader();
+            reader.onload = (e) => currentFile = e.target.result;
+            reader.readAsDataURL(document.getElementById('file-in').files[0]);
+        }
+
+        function addPost() {
+            db.projects.unshift({
+                title: document.getElementById('post-title').value,
+                image: currentFile || "https://via.placeholder.com/150",
+                type: document.getElementById('post-type').value
+            });
+            syncPreview();
+            alert("Berhasil ditambah ke Preview! Klik 'UPDATE WEBSITE' untuk publikasi permanen.");
+        }
+
+        async function deploy() {
+            const token = localStorage.getItem('iky_token');
+            db.name = document.getElementById('biz-name').value;
+            db.bio = document.getElementById('biz-bio').value;
+            db.config = { color: document.getElementById('biz-color').value, text: document.getElementById('biz-text').value };
+
+            const res = await fetch(`https://api.github.com/repos/${REPO}/contents/data.json`, {
+                method: 'PUT',
+                headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    message: "Sync Real-time Update",
+                    content: btoa(unescape(encodeURIComponent(JSON.stringify(db, null, 2)))),
+                    sha: db.sha
+                })
+            });
+            if(res.ok) alert("Website Berhasil Diperbarui!");
+        }
+
+        function renderLib() {
+            const list = document.getElementById('lib-list');
+            list.innerHTML = db.projects.map((p, i) => `
+                <div style="display:flex; align-items:center; gap:10px; padding:10px; border-bottom:1px solid #eee;">
+                    <img src="${p.image}" width="40" height="40" style="object-fit:cover; border-radius:5px;">
+                    <div style="flex:1; font-size:12px;"><b>${p.title}</b></div>
+                    <button onclick="db.projects.splice(${i},1); syncPreview(); renderLib();" style="color:red; border:none; background:none; cursor:pointer;"><i class="fa fa-trash"></i></button>
+                </div>
+            `).join('');
+        }
 
         function tab(e, id) {
             document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
@@ -190,117 +217,11 @@
             e.currentTarget.classList.add('active');
         }
 
-        function toggleTheme() {
-            const b = document.body;
-            b.setAttribute('data-theme', b.getAttribute('data-theme') === 'light' ? 'dark' : 'light');
+        function saveKey() {
+            const key = prompt("Masukkan GitHub Token:");
+            if(key) localStorage.setItem('iky_token', key);
+            location.reload();
         }
-
-        function toggleSrc() {
-            const t = document.getElementById('post-type').value;
-            document.getElementById('src-file').style.display = t === 'img' ? 'block' : 'none';
-            document.getElementById('src-link').style.display = t !== 'img' ? 'block' : 'none';
-        }
-
-        function processFile() {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                tempImg = e.target.result;
-                const p = document.getElementById('up-preview');
-                p.src = tempImg; p.style.display = 'block';
-            };
-            reader.readAsDataURL(document.getElementById('file-in').files[0]);
-        }
-
-        async function init() {
-            const token = localStorage.getItem('iky_gh_token');
-            if(!token) return;
-            const res = await fetch(`https://api.github.com/repos/${REPO}/contents/data.json`, {
-                headers: { 'Authorization': `token ${token}` }
-            });
-            const json = await res.json();
-            data = JSON.parse(atob(json.content));
-            data.sha = json.sha;
-            
-            document.getElementById('biz-name').value = data.name || "";
-            document.getElementById('biz-bio').value = data.bio || "";
-            document.getElementById('biz-color').value = (data.config && data.config.color) || "#0062ff";
-            document.getElementById('biz-text').value = (data.config && data.config.text) || "#ffffff";
-            
-            sync(); render();
-        }
-
-        function sync() {
-            const frame = document.getElementById('mobile-frame').contentDocument;
-            const name = document.getElementById('biz-name').value;
-            const bio = document.getElementById('biz-bio').value;
-            const color = document.getElementById('biz-color').value;
-            const text = document.getElementById('biz-text').value;
-
-            let cards = data.projects.map(p => `
-                <div style="background:white; border-radius:12px; overflow:hidden; margin-bottom:15px; box-shadow:0 4px 6px -1px rgba(0,0,0,0.1);">
-                    <img src="${p.image}" style="width:100%; height:120px; object-fit:cover;">
-                    <div style="padding:10px;"><b style="font-size:13px;">${p.title}</b><br><small style="color:gray;">${p.cat}</small></div>
-                </div>
-            `).join('');
-
-            frame.open();
-            frame.write(`
-                <style>body{margin:0;font-family:sans-serif;background:#f8fafc;} .h{background:${color};color:${text};padding:40px 20px;text-align:center;}</style>
-                <div class="h"><h1>${name}</h1><p>${bio}</p></div>
-                <div style="padding:15px;">${cards}</div>
-            `);
-            frame.close();
-        }
-
-        async function publish() {
-            const token = localStorage.getItem('iky_gh_token');
-            const type = document.getElementById('post-type').value;
-            let img = tempImg;
-
-            if(type === 'yt') {
-                const vidId = document.getElementById('post-url').value.split('v=')[1].split('&')[0];
-                img = `https://img.youtube.com/vi/${vidId}/maxresdefault.jpg`;
-            } else if (type === 'url') {
-                img = "https://cdn-icons-png.flaticon.com/512/1006/1006771.png"; // Icon for web link
-            }
-
-            data.projects.unshift({
-                title: document.getElementById('post-title').value,
-                cat: document.getElementById('post-cat').value,
-                image: img,
-                type: type,
-                url: document.getElementById('post-url').value
-            });
-
-            data.name = document.getElementById('biz-name').value;
-            data.bio = document.getElementById('biz-bio').value;
-            data.config = { color: document.getElementById('biz-color').value, text: document.getElementById('biz-text').value };
-
-            const res = await fetch(`https://api.github.com/repos/${REPO}/contents/data.json`, {
-                method: 'PUT',
-                headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    message: "Deploy v7 Ultra",
-                    content: btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2)))),
-                    sha: data.sha
-                })
-            });
-            if(res.ok) location.reload();
-        }
-
-        function render() {
-            const list = document.getElementById('lib-list');
-            list.innerHTML = data.projects.map((p, i) => `
-                <div style="display:flex; align-items:center; gap:15px; padding:12px; border-bottom:1px solid #e2e8f0;">
-                    <img src="${p.image}" width="50" height="50" style="object-fit:cover; border-radius:8px;">
-                    <div style="flex:1;"><b style="font-size:14px;">${p.title}</b><br><small>${p.cat}</small></div>
-                    <button onclick="del(${i})" style="color:red; border:none; background:none; cursor:pointer;"><i class="fa fa-trash"></i></button>
-                </div>
-            `).join('');
-        }
-
-        function del(i) { if(confirm('Delete this asset?')) { data.projects.splice(i,1); publish(); } }
-        function saveKey() { localStorage.setItem('iky_gh_token', document.getElementById('gh-key').value); location.reload(); }
     </script>
 </body>
 </html>
