@@ -3,469 +3,116 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Enterprise Pro - Iky Shinicy</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>IKY.PRO Master Admin v8</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #1877f2; --dark: #1c1e21; --bg: #f0f2f5; --white: #ffffff; }
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); margin: 0; display: flex; height: 100vh; overflow: hidden; }
+        :root { --p: #0062ff; --bg: #f8fafc; --dark: #0f172a; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); margin: 0; display: flex; height: 100vh; overflow: hidden; }
+        
         .sidebar { width: 240px; background: var(--dark); color: white; display: flex; flex-direction: column; flex-shrink: 0; }
-        .nav-item { padding: 15px 20px; cursor: pointer; display: flex; align-items: center; gap: 12px; transition: 0.3s; color: #ced4da; font-size: 14px; }
-        .nav-item:hover, .nav-item.active { background: var(--primary); color: white; }
-        .container { flex: 1; display: flex; overflow: hidden; }
-        .editor { flex: 1.2; padding: 25px; overflow-y: auto; border-right: 1px solid #ddd; }
-        .preview-pane { flex: 0.8; background: #e4e6eb; display: flex; flex-direction: column; }
-        #web-preview { flex: 1; border: none; background: white; margin: 15px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
-        .card { background: var(--white); padding: 20px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 20px; }
-        input, textarea, select { width: 100%; padding: 12px; margin: 8px 0 15px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; font-size: 14px; }
-        .btn { padding: 12px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; font-size: 14px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
-        .btn-primary { background: var(--primary); color: white; }
-        .btn-primary:disabled { background: #aaa; cursor: not-allowed; }
-        .btn-danger { background: #dc3545; color: white; padding: 6px 12px; font-size: 12px; width: auto; }
-        #login-overlay { position: fixed; inset: 0; background: var(--bg); display: flex; justify-content: center; align-items: center; z-index: 1000; }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-        #link-preview-box { width: 100%; height: 200px; border: 1px solid #ddd; border-radius: 8px; margin-top: 10px; background: #fff; display: none; overflow: hidden; }
-        #preview-img { width: 100%; height: 150px; object-fit: cover; border-radius: 6px; display: none; background: #eee; margin-bottom: 10px; }
-        .notif-success { background: #d4edda; color: #155724; padding: 12px; border-radius: 8px; margin-bottom: 15px; }
-        .notif-warning { background: #fff3cd; color: #856404; padding: 12px; border-radius: 8px; margin-bottom: 15px; }
-        .notif-error { background: #f8d7da; color: #721c24; padding: 12px; border-radius: 8px; margin-bottom: 15px; }
+        .logo { padding: 30px 25px; font-family: 'Space Grotesk'; font-size: 22px; color: var(--p); border-bottom: 1px solid #1e293b; }
+        .nav-item { padding: 15px 25px; cursor: pointer; color: #94a3b8; display: flex; align-items: center; gap: 12px; transition: 0.3s; }
+        .nav-item.active { background: rgba(255,255,255,0.05); color: white; border-left: 4px solid var(--p); }
+
+        .workspace { flex: 1; display: flex; overflow: hidden; }
+        .editor { flex: 1; padding: 40px; overflow-y: auto; }
+        .preview { width: 420px; background: #cbd5e1; display: flex; align-items: center; justify-content: center; border-left: 1px solid #ddd; }
+
+        .card { background: white; border-radius: 20px; padding: 30px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); margin-bottom: 25px; }
+        input, textarea { width: 100%; padding: 14px; border: 1px solid #e2e8f0; border-radius: 12px; margin-top: 8px; box-sizing: border-box; font-family: inherit; }
+        
+        .btn { background: var(--p); color: white; border: none; padding: 16px; border-radius: 12px; cursor: pointer; font-weight: 700; width: 100%; margin-top: 15px; }
+        
+        #phone { width: 310px; height: 630px; background: #0f172a; border-radius: 45px; padding: 12px; box-shadow: 0 30px 60px rgba(0,0,0,0.2); border: 4px solid #334155; }
+        #phone iframe { width: 100%; height: 100%; background: white; border-radius: 35px; border: none; }
     </style>
 </head>
 <body>
 
-    <div id="login-overlay">
-        <div class="card" style="width: 350px; text-align: center;">
-            <i class="fa fa-user-tie fa-3x" style="color:var(--primary); margin-bottom:15px;"></i>
-            <h2>Tuan Iky Login</h2>
-            <input type="text" id="user" placeholder="Username" onkeypress="if(event.key==='Enter')processLogin()">
-            <input type="password" id="pass" placeholder="Password" onkeypress="if(event.key==='Enter')processLogin()">
-            <button class="btn btn-primary" onclick="processLogin()">LOGIN SYSTEM</button>
-        </div>
+    <div class="sidebar">
+        <div class="logo">IKY.PRO v8</div>
+        <div class="nav-item active"><i class="fa fa-layer-group"></i> Dashboard</div>
+        <div class="nav-item" onclick="setToken()"><i class="fa fa-key"></i> Update Token</div>
     </div>
 
-    <div class="sidebar" id="sidebar-ui" style="display:none;">
-        <div style="padding: 25px; font-weight: bold; border-bottom: 1px solid #333; font-size: 18px; color: var(--primary);">IKY ENTERPRISE v5</div>
-        <div class="nav-item active" onclick="openTab(event, 'tab-profile')"><i class="fa fa-id-card"></i> Profil</div>
-        <div class="nav-item" onclick="openTab(event, 'tab-add')"><i class="fa fa-plus-square"></i> Upload / Link</div>
-        <div class="nav-item" onclick="openTab(event, 'tab-list'); renderList()"><i class="fa fa-database"></i> Kelola Konten</div>
-        <div class="nav-item" onclick="openTab(event, 'tab-token')"><i class="fa fa-key"></i> API Token</div>
-        <div class="nav-item" onclick="logout()" style="margin-top:auto;"><i class="fa fa-power-off"></i> Logout</div>
-    </div>
-
-    <div class="container" id="main-ui" style="display:none;">
+    <div class="workspace">
         <div class="editor">
-            <div id="notif"></div>
-
-            <div id="tab-profile" class="tab-content active">
-                <div class="card">
-                    <h3>Setting Brand</h3>
-                    <input type="text" id="upd-name" placeholder="Nama Brand" oninput="livePreview()">
-                    <textarea id="upd-bio" rows="4" placeholder="Slogan / Deskripsi" oninput="livePreview()"></textarea>
-                    <button class="btn btn-primary" id="btn-save-bio" onclick="saveToGithub('bio')">SIMPAN BRANDING</button>
-                </div>
+            <div class="card">
+                <h3>Branding Engine</h3>
+                <label>Display Name</label>
+                <input type="text" id="biz-name" oninput="sync()">
+                <label style="margin-top:15px; display:block;">Bio / Slogan</label>
+                <textarea id="biz-bio" rows="2" oninput="sync()"></textarea>
             </div>
-
-            <div id="tab-add" class="tab-content">
-                <div class="card">
-                    <h3>Tambah Konten Baru</h3>
-                    <input type="text" id="p-title" placeholder="Judul Project (Contoh: E-book Branding)">
-                    <select id="p-type" onchange="toggleInput()">
-                        <option value="image">Upload Foto (Galeri)</option>
-                        <option value="link">Project Link (Website/Web-App)</option>
-                        <option value="video">YouTube Video</option>
-                    </select>
-                    
-                    <div id="input-file">
-                        <input type="file" id="file-upload" accept="image/*" onchange="previewFile()">
-                        <img id="preview-img">
-                    </div>
-
-                    <div id="input-link" style="display:none;">
-                        <input type="text" id="p-url" placeholder="Masukkan URL Website (https://...)" oninput="updateLinkPreview()">
-                        <div id="link-preview-box">
-                            <p style="font-size:10px; color:gray; text-align:center; margin-top:80px;">Preview Website Tampil di Sini</p>
-                            <iframe id="link-frame" style="width:100%; height:100%; border:none; display:none;"></iframe>
-                        </div>
-                    </div>
-
-                    <div id="input-yt" style="display:none;">
-                        <input type="text" id="p-yt" placeholder="Link YouTube (https://youtube.com/watch?v=xxx)">
-                    </div>
-
-                    <textarea id="p-prompt" rows="2" placeholder="Copy-Paste Prompt AI (Opsional)"></textarea>
-                    <button class="btn btn-primary" id="btn-publish" onclick="saveToGithub('add')">PUBLISH KE CLOUD</button>
-                </div>
-            </div>
-
-            <div id="tab-list" class="tab-content">
-                <div class="card">
-                    <h3>List Database</h3>
-                    <div id="list-container">Memuat...</div>
-                </div>
-            </div>
-
-            <div id="tab-token" class="tab-content">
-                <div class="card">
-                    <h3>GitHub API Token</h3>
-                    <p style="font-size:12px; color:#666;">Token tersimpan di localStorage browser ini. Tidak perlu diisi ulang kecuali ganti token.</p>
-                    <input type="password" id="ghToken" placeholder="ghp_xxx">
-                    <button class="btn btn-primary" onclick="saveToken()">UPDATE API TOKEN</button>
-                    <p id="token-status" style="font-size:12px; margin-top:5px;"></p>
-                </div>
-            </div>
+            <button class="btn" onclick="publish()"><i class="fa fa-cloud-upload"></i> SAVE TO GITHUB</button>
         </div>
 
-        <div class="preview-pane">
-            <div style="padding:10px; text-align:center; font-size:11px; background:#fff; border-bottom:1px solid #ddd;">LIVE MOBILE PREVIEW</div>
-            <iframe id="web-preview"></iframe>
+        <div class="preview">
+            <div id="phone"><iframe id="live-view"></iframe></div>
         </div>
     </div>
 
     <script>
         const REPO = "ikyshinicy/WEB-RIZKY-RERANZA";
-        // dbData menyimpan SEMUA state termasuk sha untuk update GitHub
-        let dbData = { name: "", bio: "", projects: [], sha: "" };
-        let base64Image = "";
+        let db = { projects: [] };
 
-        // =====================
-        // AUTH
-        // =====================
-        function processLogin() {
-            if(document.getElementById('user').value === 'admin' && document.getElementById('pass').value === 'eky598939') {
-                sessionStorage.setItem('iky_v5_auth', 'true');
-                location.reload();
-            } else {
-                alert("Akses Ditolak!");
-            }
-        }
-
-        window.onload = async () => {
-            checkTokenStatus();
-            if(sessionStorage.getItem('iky_v5_auth')) {
-                document.getElementById('login-overlay').style.display = 'none';
-                document.getElementById('sidebar-ui').style.display = 'flex';
-                document.getElementById('main-ui').style.display = 'flex';
-                // PERBAIKAN: Tunggu loadFromGH selesai sebelum render
-                await loadFromGH();
-            }
-        };
-
-        function checkTokenStatus() {
-            const token = localStorage.getItem('myGithubToken');
-            const el = document.getElementById('token-status');
-            if(el) el.textContent = token ? `✅ Token tersimpan (${token.substring(0,8)}...)` : '⚠️ Belum ada token';
-        }
-
-        function logout() { sessionStorage.clear(); location.reload(); }
-
-        // =====================
-        // TAB NAVIGATION
-        // =====================
-        function openTab(evt, tabName) {
-            document.querySelectorAll(".tab-content").forEach(t => t.classList.remove("active"));
-            document.querySelectorAll(".nav-item").forEach(n => n.classList.remove("active"));
-            document.getElementById(tabName).classList.add("active");
-            evt.currentTarget.classList.add("active");
-        }
-
-        // =====================
-        // INPUT TOGGLE
-        // =====================
-        function toggleInput() {
-            const t = document.getElementById('p-type').value;
-            document.getElementById('input-file').style.display = t === 'image' ? 'block' : 'none';
-            document.getElementById('input-link').style.display = t === 'link' ? 'block' : 'none';
-            document.getElementById('input-yt').style.display = t === 'video' ? 'block' : 'none';
-        }
-
-        function previewFile() {
-            const file = document.getElementById('file-upload').files[0];
-            if(!file) return;
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                base64Image = e.target.result;
-                document.getElementById('preview-img').src = e.target.result;
-                document.getElementById('preview-img').style.display = 'block';
-            };
-            reader.readAsDataURL(file);
-        }
-
-        function updateLinkPreview() {
-            const url = document.getElementById('p-url').value;
-            const box = document.getElementById('link-preview-box');
-            const frame = document.getElementById('link-frame');
-            if(url.startsWith('http')) {
-                box.style.display = 'block';
-                frame.src = url;
-                frame.style.display = 'block';
-                box.querySelector('p').style.display = 'none';
-            }
-        }
-
-        // =====================
-        // LOAD DATA DARI GITHUB
-        // =====================
-        async function loadFromGH() {
-            const token = localStorage.getItem('myGithubToken');
-            if(!token) {
-                showNotif('warning', '⚠️ Token GitHub belum diset. Buka tab "API Token" untuk mengisi token.');
-                return;
-            }
-
-            showNotif('warning', '⏳ Memuat data dari GitHub...');
-
+        async function init() {
+            const token = localStorage.getItem('iky_gh_token');
+            if(!token) return setToken();
+            
             try {
                 const res = await fetch(`https://api.github.com/repos/${REPO}/contents/data.json`, {
                     headers: { 'Authorization': `token ${token}` }
                 });
-
-                if(!res.ok) {
-                    const err = await res.json();
-                    showNotif('error', `❌ Gagal load: ${err.message}`);
-                    return;
-                }
-
                 const json = await res.json();
-                const parsed = JSON.parse(atob(json.content));
+                db = JSON.parse(atob(json.content));
+                db.sha = json.sha;
 
-                // PERBAIKAN: Simpan sha di dbData agar selalu ter-update
-                dbData = {
-                    name: parsed.name || "",
-                    bio: parsed.bio || "",
-                    projects: parsed.projects || [],
-                    sha: json.sha  // <-- SHA wajib untuk update berikutnya
-                };
-
-                document.getElementById('upd-name').value = dbData.name;
-                document.getElementById('upd-bio').value = dbData.bio;
-
-                showNotif('success', `✅ Data loaded — ${dbData.projects.length} project ditemukan.`);
-                livePreview();
-                renderList();
-
-            } catch(e) {
-                showNotif('error', `❌ Error: ${e.message}`);
-            }
+                document.getElementById('biz-name').value = db.name || "";
+                document.getElementById('biz-bio').value = db.bio || "";
+                sync();
+            } catch(e) { alert("GitHub Error. Periksa Token!"); }
         }
 
-        // =====================
-        // LIVE PREVIEW
-        // =====================
-        function livePreview() {
-            const preview = document.getElementById('web-preview').contentDocument;
-            if(!preview) return;
-            const name = document.getElementById('upd-name').value;
-            const bio = document.getElementById('upd-bio').value;
+        function sync() {
+            const frame = document.getElementById('live-view').contentDocument;
+            const name = document.getElementById('biz-name').value;
+            const bio = document.getElementById('biz-bio').value;
 
-            let cards = (dbData.projects || []).map(p => {
-                const imgSrc = p.image && p.image.startsWith('data:')
-                    ? p.image
-                    : (p.image || 'https://via.placeholder.com/150?text=PROJECT');
-                return `
-                    <div style="background:white;border-radius:10px;margin-bottom:12px;box-shadow:0 3px 6px rgba(0,0,0,0.1);overflow:hidden;">
-                        <img src="${imgSrc}" style="width:100%;height:90px;object-fit:cover" onerror="this.src='https://via.placeholder.com/150?text=NO+IMG'">
-                        <div style="padding:8px;font-size:11px;"><b>${p.title}</b></div>
-                    </div>`;
-            }).join('');
-
-            preview.open();
-            preview.write(`<!DOCTYPE html><html><body style="font-family:sans-serif;background:#f4f7f6;margin:0;padding:15px;text-align:center;">
-                <div style="background:linear-gradient(to right, #1877f2, #0056b3);color:white;padding:25px 10px;border-radius:15px;">
-                    <h2 style="margin:0">${name}</h2>
-                    <p style="font-size:12px;opacity:0.8">${bio}</p>
-                </div>
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:20px;">${cards}</div>
-            </body></html>`);
-            preview.close();
+            frame.open();
+            frame.write(`
+                <style>body{margin:0; font-family:sans-serif; background:#f8fafc; text-align:center;} 
+                .h{background:#0062ff; color:white; padding:40px 20px;} h1{margin:0; font-size:22px;} p{font-size:12px; opacity:0.8;}</style>
+                <div class="h"><h1>${name}</h1><p>${bio}</p></div>
+                <div style="padding:20px; font-size:11px; color:gray;">Preview Mode Active</div>
+            `);
+            frame.close();
         }
 
-        // =====================
-        // RENDER LIST
-        // =====================
-        function renderList() {
-            const container = document.getElementById('list-container');
-            if(!dbData.projects || dbData.projects.length === 0) {
-                container.innerHTML = '<p style="color:#999;text-align:center;">Belum ada konten. Tambah via tab Upload/Link.</p>';
-                return;
-            }
-            container.innerHTML = dbData.projects.map((p, i) => {
-                const imgSrc = p.image && p.image.startsWith('data:')
-                    ? p.image
-                    : (p.image || 'https://via.placeholder.com/50');
-                return `
-                <div style="background:#f9f9f9;padding:12px;border-radius:8px;margin-bottom:10px;border:1px solid #ddd;">
-                    <div style="display:flex;align-items:center;gap:12px">
-                        <img src="${imgSrc}" width="50" height="50" style="object-fit:cover;border-radius:5px" onerror="this.src='https://via.placeholder.com/50'">
-                        <div style="flex:1">
-                            <b style="font-size:13px">${p.title}</b><br>
-                            <span style="font-size:10px;color:blue;">Type: ${p.type}</span>
-                        </div>
-                        <button class="btn-danger" onclick="deleteItem(${i})"><i class="fa fa-trash"></i></button>
-                    </div>
-                    <div style="margin-top:10px;display:flex;gap:10px;">
-                        <button onclick="copyP('${(p.prompt||'').replace(/'/g,''')}')" style="font-size:11px;padding:5px 10px;border:1px solid #ddd;background:#fff;border-radius:4px;cursor:pointer;"><i class="fa fa-copy"></i> Prompt</button>
-                        ${p.url ? `<button onclick="window.open('${p.url}','_blank')" style="font-size:11px;padding:5px 10px;border:1px solid #ddd;background:#fff;border-radius:4px;cursor:pointer;"><i class="fa fa-external-link-alt"></i> Visit</button>` : ''}
-                    </div>
-                </div>`;
-            }).join('');
+        async function publish() {
+            const token = localStorage.getItem('iky_gh_token');
+            db.name = document.getElementById('biz-name').value;
+            db.bio = document.getElementById('biz-bio').value;
+
+            const res = await fetch(`https://api.github.com/repos/${REPO}/contents/data.json`, {
+                method: 'PUT',
+                headers: { 'Authorization': `token ${token}` },
+                body: JSON.stringify({
+                    message: "Sync from V8 Dashboard",
+                    content: btoa(unescape(encodeURIComponent(JSON.stringify(db, null, 2)))),
+                    sha: db.sha
+                })
+            });
+            if(res.ok) { alert("Data Tersimpan Aman di GitHub!"); location.reload(); }
         }
 
-        // =====================
-        // SAVE KE GITHUB
-        // =====================
-        async function saveToGithub(type) {
-            const token = localStorage.getItem('myGithubToken');
-            if(!token) return alert("Token GitHub kosong! Isi dulu di tab API Token.");
-
-            // Validasi input
-            if(type === 'add') {
-                const title = document.getElementById('p-title').value.trim();
-                if(!title) return alert("Judul project wajib diisi!");
-
-                const pType = document.getElementById('p-type').value;
-                if(pType === 'image' && !base64Image) return alert("Pilih gambar terlebih dahulu!");
-                if(pType === 'link' && !document.getElementById('p-url').value.trim()) return alert("URL wajib diisi!");
-                if(pType === 'video' && !document.getElementById('p-yt').value.trim()) return alert("URL YouTube wajib diisi!");
-            }
-
-            // Disable tombol saat proses
-            const btnId = type === 'add' ? 'btn-publish' : 'btn-save-bio';
-            const btn = document.getElementById(btnId);
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Menyimpan...';
-
-            showNotif('warning', '⏳ Sinkronisasi ke GitHub Cloud...');
-
-            // PERBAIKAN: Ambil SHA terbaru sebelum update untuk hindari konflik 409
-            try {
-                const getRes = await fetch(`https://api.github.com/repos/${REPO}/contents/data.json`, {
-                    headers: { 'Authorization': `token ${token}` }
-                });
-                if(!getRes.ok) throw new Error("Gagal mengambil SHA terbaru");
-                const getJson = await getRes.json();
-                dbData.sha = getJson.sha; // Update SHA terbaru
-            } catch(e) {
-                showNotif('error', `❌ Gagal sinkronisasi SHA: ${e.message}`);
-                btn.disabled = false;
-                btn.innerHTML = type === 'add' ? 'PUBLISH KE CLOUD' : 'SIMPAN BRANDING';
-                return;
-            }
-
-            // Susun data yang akan disave
-            if(type === 'add') {
-                const pType = document.getElementById('p-type').value;
-                let img = base64Image;
-                let url = document.getElementById('p-url').value.trim();
-
-                if(pType === 'video') {
-                    const ytVal = document.getElementById('p-yt').value.trim();
-                    const match = ytVal.match(/(?:v=|youtu\.be\/)([^&\n?#]+)/);
-                    const id = match ? match[1] : '';
-                    img = id ? `https://img.youtube.com/vi/${id}/hqdefault.jpg` : '';
-                    url = ytVal;
-                }
-
-                const newProject = {
-                    title: document.getElementById('p-title').value.trim(),
-                    image: img,
-                    url: url,
-                    prompt: document.getElementById('p-prompt').value.trim(),
-                    type: pType
-                };
-
-                dbData.projects.unshift(newProject); // Tambah di depan
-
-            } else {
-                dbData.name = document.getElementById('upd-name').value;
-                dbData.bio = document.getElementById('upd-bio').value;
-            }
-
-            // Data yang di-push ke GitHub (tanpa field sha agar JSON bersih)
-            const cleanData = {
-                name: dbData.name,
-                bio: dbData.bio,
-                projects: dbData.projects
-            };
-
-            try {
-                const res = await fetch(`https://api.github.com/repos/${REPO}/contents/data.json`, {
-                    method: 'PUT',
-                    headers: {
-                        'Authorization': `token ${token}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        message: `Enterprise Update v5 - ${type}`,
-                        content: btoa(unescape(encodeURIComponent(JSON.stringify(cleanData, null, 2)))),
-                        sha: dbData.sha
-                    })
-                });
-
-                if(!res.ok) {
-                    const errData = await res.json();
-                    throw new Error(errData.message || `HTTP ${res.status}`);
-                }
-
-                const resJson = await res.json();
-                // PERBAIKAN: Update SHA dengan yang baru dari response
-                dbData.sha = resJson.content.sha;
-
-                showNotif('success', '✅ Berhasil disimpan ke GitHub!');
-                livePreview();
-                renderList();
-
-                // Reset form jika add
-                if(type === 'add') {
-                    document.getElementById('p-title').value = '';
-                    document.getElementById('p-url').value = '';
-                    document.getElementById('p-yt').value = '';
-                    document.getElementById('p-prompt').value = '';
-                    document.getElementById('preview-img').style.display = 'none';
-                    document.getElementById('link-preview-box').style.display = 'none';
-                    base64Image = '';
-                }
-
-            } catch(e) {
-                showNotif('error', `❌ Gagal simpan: ${e.message}`);
-                // Rollback project yang baru ditambah jika gagal
-                if(type === 'add') dbData.projects.shift();
-            } finally {
-                btn.disabled = false;
-                btn.innerHTML = type === 'add' ? 'PUBLISH KE CLOUD' : 'SIMPAN BRANDING';
-            }
+        function setToken() {
+            const t = prompt("Masukkan GitHub Token:");
+            if(t) { localStorage.setItem('iky_gh_token', t); init(); }
         }
 
-        // =====================
-        // DELETE ITEM
-        // =====================
-        function deleteItem(i) {
-            if(confirm(`Hapus project "${dbData.projects[i].title}"?`)) {
-                dbData.projects.splice(i, 1);
-                saveToGithub('bio'); // Simpan setelah delete
-            }
-        }
-
-        // =====================
-        // UTILITY
-        // =====================
-        function copyP(t) {
-            navigator.clipboard.writeText(t).then(() => alert("Prompt Copied!")).catch(() => alert("Gagal copy"));
-        }
-
-        function saveToken() {
-            const val = document.getElementById('ghToken').value.trim();
-            if(!val) return alert("Token tidak boleh kosong!");
-            localStorage.setItem('myGithubToken', val);
-            checkTokenStatus();
-            showNotif('success', '✅ Token disimpan! Memuat ulang data...');
-            setTimeout(() => loadFromGH(), 500);
-        }
-
-        function showNotif(type, msg) {
-            const el = document.getElementById('notif');
-            el.innerHTML = `<div class="notif-${type}">${msg}</div>`;
-            if(type === 'success') setTimeout(() => { el.innerHTML = ''; }, 4000);
-        }
+        window.onload = init;
     </script>
 </body>
 </html>
