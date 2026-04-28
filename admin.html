@@ -3,38 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Admin - Iky Shinicy</title>
+    <title>Pro Dashboard - Iky Shinicy</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root { --primary: #1877f2; --dark: #1c1e21; --bg: #f0f2f5; --white: #ffffff; }
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); margin: 0; display: flex; min-height: 100vh; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); margin: 0; display: flex; height: 100vh; overflow: hidden; }
         
-        /* Sidebar ala WordPress */
-        .sidebar { width: 220px; background: var(--dark); color: white; display: flex; flex-direction: column; }
-        .sidebar-header { padding: 20px; font-weight: bold; font-size: 1.2rem; border-bottom: 1px solid #3e4146; text-align: center; }
-        .nav-item { padding: 15px 20px; cursor: pointer; display: flex; align-items: center; gap: 10px; transition: 0.3s; color: #ced4da; }
+        /* Sidebar */
+        .sidebar { width: 200px; background: var(--dark); color: white; display: flex; flex-direction: column; flex-shrink: 0; }
+        .nav-item { padding: 15px 20px; cursor: pointer; display: flex; align-items: center; gap: 10px; transition: 0.3s; color: #ced4da; font-size: 14px; }
         .nav-item:hover, .nav-item.active { background: var(--primary); color: white; }
 
-        /* Main Content */
-        .main { flex: 1; padding: 30px; overflow-y: auto; }
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
-        .card { background: var(--white); padding: 25px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 20px; }
-        
-        /* Form & UI */
-        input, textarea, select { width: 100%; padding: 12px; margin: 8px 0 15px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; font-size: 14px; }
-        .btn { padding: 12px 25px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.3s; }
+        /* Main Layout */
+        .container { flex: 1; display: flex; overflow: hidden; }
+        .editor { flex: 1; padding: 25px; overflow-y: auto; border-right: 1px solid #ddd; }
+        .preview-pane { flex: 1; background: #e4e6eb; display: flex; flex-direction: column; }
+        .preview-header { background: #fff; padding: 10px; text-align: center; font-size: 12px; font-weight: bold; border-bottom: 1px solid #ddd; }
+        #web-preview { flex: 1; border: none; background: white; margin: 20px; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+
+        /* UI Components */
+        .card { background: var(--white); padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        input, textarea, select { width: 100%; padding: 10px; margin: 8px 0 15px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; }
+        .btn { padding: 12px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; }
         .btn-primary { background: var(--primary); color: white; }
-        .btn-danger { background: #dc3545; color: white; margin-top: 5px; }
+        .btn-danger { background: #dc3545; color: white; width: auto; padding: 5px 10px; }
 
-        /* Tab Content */
-        .tab-content { display: none; animation: fadeIn 0.5s; }
+        .tab-content { display: none; }
         .tab-content.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-        /* Project List */
-        .project-item { display: flex; align-items: center; gap: 15px; padding: 15px; border: 1px solid #eee; border-radius: 8px; margin-bottom: 10px; }
-        .project-item img { width: 60px; height: 60px; object-fit: cover; border-radius: 4px; }
-        .project-info { flex: 1; }
         
         #login-overlay { position: fixed; inset: 0; background: var(--bg); display: flex; justify-content: center; align-items: center; z-index: 1000; }
     </style>
@@ -42,188 +37,49 @@
 <body>
 
     <div id="login-overlay">
-        <div class="card" style="width: 350px;">
-            <h2 style="text-align:center">Admin Login</h2>
+        <div class="card" style="width: 320px; text-align: center;">
+            <h2>Admin Login</h2>
             <input type="text" id="user" placeholder="Username">
             <input type="password" id="pass" placeholder="Password">
-            <button class="btn btn-primary" style="width:100%" onclick="login()">Masuk</button>
+            <button class="btn btn-primary" onclick="login()">MASUK KE DASHBOARD</button>
         </div>
     </div>
 
     <div class="sidebar">
-        <div class="sidebar-header">IKY DIGITAL</div>
-        <div class="nav-item active" onclick="openTab(event, 'tab-profile')"><i class="fa fa-user"></i> Profil & Bio</div>
-        <div class="nav-item" onclick="openTab(event, 'tab-add')"><i class="fa fa-plus-circle"></i> Tambah Konten</div>
-        <div class="nav-item" onclick="openTab(event, 'tab-list')"><i class="fa fa-list"></i> Kelola Portofolio</div>
-        <div class="nav-item" onclick="openTab(event, 'tab-token')"><i class="fa fa-key"></i> API Token</div>
-        <div class="nav-item" onclick="logout()" style="margin-top: auto; border-top: 1px solid #3e4146;"><i class="fa fa-sign-out"></i> Logout</div>
+        <div style="padding: 20px; font-weight: bold; border-bottom: 1px solid #333;">IKY DIGITAL PRO</div>
+        <div class="nav-item active" onclick="openTab(event, 'tab-profile')"><i class="fa fa-edit"></i> Edit Bio</div>
+        <div class="nav-item" onclick="openTab(event, 'tab-add')"><i class="fa fa-plus"></i> Tambah Konten</div>
+        <div class="nav-item" onclick="openTab(event, 'tab-list')"><i class="fa fa-folder"></i> Kelola List</div>
+        <div class="nav-item" onclick="openTab(event, 'tab-token')"><i class="fa fa-key"></i> Token API</div>
+        <div class="nav-item" onclick="logout()" style="margin-top: auto;"><i class="fa fa-sign-out"></i> Logout</div>
     </div>
 
-    <div class="main">
-        <div id="status" style="position: sticky; top: 0; z-index: 99; margin-bottom: 10px;"></div>
+    <div class="container">
+        <div class="editor">
+            <div id="status"></div>
 
-        <div id="tab-profile" class="tab-content active">
-            <div class="card">
-                <h2>Profil & Branding</h2>
-                <label>Nama Profesional</label>
-                <input type="text" id="upd-name" placeholder="Nama Anda">
-                <label>Bio / Slogan Bisnis</label>
-                <textarea id="upd-bio" rows="4"></textarea>
-                <button class="btn btn-primary" onclick="saveChanges()">Update Profil</button>
-            </div>
-        </div>
-
-        <div id="tab-add" class="tab-content">
-            <div class="card">
-                <h2>Tambah Konten Baru (Foto/Video)</h2>
-                <label>Judul Karya</label>
-                <input type="text" id="p-title" placeholder="Misal: Spanduk Toko Papua">
-                <label>Tipe Konten</label>
-                <select id="p-type">
-                    <option value="image">Gambar / Foto</option>
-                    <option value="video">Link Video (YouTube/Lainnya)</option>
-                </select>
-                <label>URL Gambar/Thumbnail</label>
-                <input type="text" id="p-img" placeholder="https://link-gambar.jpg">
-                <label>Link Tujuan (Opsional)</label>
-                <input type="text" id="p-link" placeholder="Link ke WA atau Detail">
-                <button class="btn btn-primary" onclick="saveChanges('add')">Publikasikan Sekarang</button>
-            </div>
-        </div>
-
-        <div id="tab-list" class="tab-content">
-            <div class="card">
-                <h2>Semua Portofolio</h2>
-                <p>Berikut adalah daftar karya yang tampil di website Tuan.</p>
-                <div id="project-list-container">
-                    <p>Loading data...</p>
+            <div id="tab-profile" class="tab-content active">
+                <div class="card">
+                    <h3>Profil & Bio</h3>
+                    <label>Nama Display</label>
+                    <input type="text" id="upd-name" oninput="livePreview()">
+                    <label>Slogan / Bio</label>
+                    <textarea id="upd-bio" rows="4" oninput="livePreview()"></textarea>
+                    <button class="btn btn-primary" onclick="saveChanges()">PUBLISH PERUBAHAN BIO</button>
                 </div>
             </div>
-        </div>
 
-        <div id="tab-token" class="tab-content">
-            <div class="card">
-                <h2>GitHub API Token</h2>
-                <p>Token ini untuk akses otomatis ke website Tuan.</p>
-                <input type="password" id="ghToken" placeholder="Masukkan ghp_ token Tuan">
-                <button class="btn btn-primary" onclick="saveToken()">Simpan Token di Browser</button>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        const REPO = "ikyshinicy/WEB-RIZKY-RERANZA";
-        let dbData = { name: "", bio: "", projects: [] };
-
-        // 1. LOGIN SYSTEM
-        function login() {
-            const u = document.getElementById('user').value;
-            const p = document.getElementById('pass').value;
-            if(u === 'admin' && p === 'eky598939') {
-                document.getElementById('login-overlay').style.display = 'none';
-                sessionStorage.setItem('iky_auth', 'true');
-                loadData();
-            } else { alert("Salah Tuan!"); }
-        }
-
-        if(sessionStorage.getItem('iky_auth')) { document.getElementById('login-overlay').style.display = 'none'; loadData(); }
-
-        function logout() { sessionStorage.clear(); location.reload(); }
-
-        // 2. NAVIGATION
-        function openTab(evt, tabName) {
-            let i, content, items;
-            content = document.getElementsByClassName("tab-content");
-            for (i = 0; i < content.length; i++) content[i].classList.remove("active");
-            items = document.getElementsByClassName("nav-item");
-            for (i = 0; i < items.length; i++) items[i].classList.remove("active");
-            document.getElementById(tabName).classList.add("active");
-            evt.currentTarget.classList.add("active");
-        }
-
-        // 3. DATA HANDLER
-        async function loadData() {
-            const token = localStorage.getItem('myGithubToken');
-            if(!token) return;
-            try {
-                const res = await fetch(`https://api.github.com/repos/${REPO}/contents/data.json`, {
-                    headers: { 'Authorization': `token ${token}` }
-                });
-                const json = await res.json();
-                dbData = JSON.parse(atob(json.content));
-                dbData.sha = json.sha;
-                
-                document.getElementById('upd-name').value = dbData.name;
-                document.getElementById('upd-bio').value = dbData.bio;
-                renderList();
-            } catch (e) { console.error("Gagal load"); }
-        }
-
-        function renderList() {
-            const container = document.getElementById('project-list-container');
-            container.innerHTML = "";
-            dbData.projects.forEach((p, index) => {
-                container.innerHTML += `
-                    <div class="project-item">
-                        <img src="${p.image}" onerror="this.src='https://via.placeholder.com/60?text=VIDEO'">
-                        <div class="project-info">
-                            <strong>${p.title}</strong><br>
-                            <small>${p.link}</small>
-                        </div>
-                        <button class="btn btn-danger" onclick="deleteProject(${index})"><i class="fa fa-trash"></i></button>
-                    </div>
-                `;
-            });
-        }
-
-        async function saveChanges(mode) {
-            const token = localStorage.getItem('myGithubToken');
-            const status = document.getElementById('status');
-            if(!token) { alert("Isi Token dulu di Tab Token!"); return; }
-
-            status.innerHTML = "<div class='card' style='background:#fff3cd'>⏳ Memproses ke GitHub...</div>";
-
-            if(mode === 'add') {
-                const newItem = {
-                    title: document.getElementById('p-title').value,
-                    image: document.getElementById('p-img').value,
-                    link: document.getElementById('p-link').value,
-                    type: document.getElementById('p-type').value
-                };
-                dbData.projects.unshift(newItem);
-            } else {
-                dbData.name = document.getElementById('upd-name').value;
-                dbData.bio = document.getElementById('upd-bio').value;
-            }
-
-            try {
-                const res = await fetch(`https://api.github.com/repos/${REPO}/contents/data.json`, {
-                    method: 'PUT',
-                    headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        message: "Update Content via Dashboard Pro",
-                        content: btoa(JSON.stringify({name: dbData.name, bio: dbData.bio, projects: dbData.projects}, null, 2)),
-                        sha: dbData.sha
-                    })
-                });
-                if(res.ok) {
-                    status.innerHTML = "<div class='card' style='background:#d4edda; color:#155724'>✅ Berhasil Terbit! Web terupdate dlm 1 menit.</div>";
-                    loadData();
-                }
-            } catch (e) { status.innerHTML = "Error!"; }
-        }
-
-        function deleteProject(index) {
-            if(confirm("Hapus konten ini, Tuan Iky?")) {
-                dbData.projects.splice(index, 1);
-                saveChanges();
-            }
-        }
-
-        function saveToken() {
-            const t = document.getElementById('ghToken').value;
-            if(t) { localStorage.setItem('myGithubToken', t); alert("Token Disimpan!"); location.reload(); }
-        }
-    </script>
-</body>
-</html>
+            <div id="tab-add" class="tab-content">
+                <div class="card">
+                    <h3>Tambah Konten Baru</h3>
+                    <label>Judul Karya</label>
+                    <input type="text" id="p-title" placeholder="Nama Project">
+                    <label>Tipe Media</label>
+                    <select id="p-type" onchange="toggleHint()">
+                        <option value="image">Foto / Gambar (Link JPG/PNG)</option>
+                        <option value="video">Video (YouTube Link)</option>
+                    </select>
+                    <label id="url-label">URL Link Media</label>
+                    <input type="text" id="p-img" placeholder="Paste link di sini...">
+                    <label>Tautan Eksternal (Opsional)</label>
+                    <input type="text" id="p-link" placeholder="Link WhatsApp/Detail
