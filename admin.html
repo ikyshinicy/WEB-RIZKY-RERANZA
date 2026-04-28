@@ -8,7 +8,7 @@
     <style>
         :root { --primary: #1877f2; --dark: #1c1e21; --bg: #f0f2f5; --white: #ffffff; }
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); margin: 0; display: flex; height: 100vh; overflow: hidden; }
-        .sidebar { width: 200px; background: var(--dark); color: white; display: flex; flex-direction: column; flex-shrink: 0; }
+        .sidebar { width: 220px; background: var(--dark); color: white; display: flex; flex-direction: column; flex-shrink: 0; }
         .nav-item { padding: 15px 20px; cursor: pointer; display: flex; align-items: center; gap: 10px; transition: 0.3s; color: #ced4da; font-size: 14px; }
         .nav-item:hover, .nav-item.active { background: var(--primary); color: white; }
         .container { flex: 1; display: flex; overflow: hidden; }
@@ -16,79 +16,86 @@
         .preview-pane { flex: 1; background: #e4e6eb; display: flex; flex-direction: column; }
         #web-preview { flex: 1; border: none; background: white; margin: 20px; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
         .card { background: var(--white); padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); margin-bottom: 20px; }
-        input, textarea, select { width: 100%; padding: 10px; margin: 8px 0 15px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; }
-        .btn { padding: 12px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; }
+        input, textarea, select { width: 100%; padding: 12px; margin: 8px 0 15px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; font-size: 16px; }
+        .btn { padding: 14px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; font-size: 16px; transition: 0.2s; }
+        .btn:active { transform: scale(0.98); }
         .btn-primary { background: var(--primary); color: white; }
-        .btn-danger { background: #dc3545; color: white; width: auto; padding: 5px 10px; cursor: pointer; }
+        .btn-danger { background: #dc3545; color: white; width: auto; padding: 5px 10px; cursor: pointer; border-radius: 4px; }
         #login-overlay { position: fixed; inset: 0; background: var(--bg); display: flex; justify-content: center; align-items: center; z-index: 1000; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
+        #login-error { color: #dc3545; font-size: 14px; margin-top: 10px; font-weight: bold; }
     </style>
 </head>
 <body>
 
     <div id="login-overlay">
-        <div class="card" style="width: 320px; text-align: center;">
-            <h2 style="margin-bottom:20px;">Admin Login</h2>
-            <input type="text" id="user" placeholder="Username">
-            <input type="password" id="pass" placeholder="Password">
-            <button class="btn btn-primary" onclick="processLogin()">MASUK KE DASHBOARD</button>
-            <p id="err-msg" style="color:red; font-size:12px; margin-top:10px;"></p>
+        <div class="card" style="width: 350px; text-align: center; border-top: 5px solid var(--primary);">
+            <h2 style="margin-top:0">Admin Login</h2>
+            <p style="color:#666; font-size:14px;">Dashboard Otak Digital Iky</p>
+            <input type="text" id="user" placeholder="Username" onkeypress="handleEnter(event)">
+            <input type="password" id="pass" placeholder="Password" onkeypress="handleEnter(event)">
+            <button id="login-btn" class="btn btn-primary" onclick="processLogin()">MASUK (ENTER)</button>
+            <div id="login-error"></div>
         </div>
     </div>
 
-    <div class="sidebar">
-        <div style="padding: 20px; font-weight: bold; border-bottom: 1px solid #333;">IKY DIGITAL PRO</div>
-        <div class="nav-item active" onclick="openTab(event, 'tab-profile')"><i class="fa fa-edit"></i> Edit Bio</div>
-        <div class="nav-item" onclick="openTab(event, 'tab-add')"><i class="fa fa-plus"></i> Tambah Konten</div>
-        <div class="nav-item" onclick="openTab(event, 'tab-list')"><i class="fa fa-folder"></i> Kelola List</div>
-        <div class="nav-item" onclick="openTab(event, 'tab-token')"><i class="fa fa-key"></i> Token API</div>
-        <div class="nav-item" onclick="logout()" style="margin-top: auto;"><i class="fa fa-sign-out"></i> Logout</div>
+    <div class="sidebar" id="sidebar-ui" style="display:none;">
+        <div style="padding: 25px 20px; font-weight: bold; font-size: 18px; border-bottom: 1px solid #333; color: var(--primary);">IKY PRO DASHBOARD</div>
+        <div class="nav-item active" onclick="openTab(event, 'tab-profile')"><i class="fa fa-edit"></i> Edit Profil</div>
+        <div class="nav-item" onclick="openTab(event, 'tab-add')"><i class="fa fa-plus-circle"></i> Tambah Konten</div>
+        <div class="nav-item" onclick="openTab(event, 'tab-list')"><i class="fa fa-folder-open"></i> Kelola Portofolio</div>
+        <div class="nav-item" onclick="openTab(event, 'tab-token')"><i class="fa fa-key"></i> Pengaturan API</div>
+        <div class="nav-item" onclick="logout()" style="margin-top: auto; background: #333;"><i class="fa fa-sign-out"></i> Logout</div>
     </div>
 
-    <div class="container">
+    <div class="container" id="main-ui" style="display:none;">
         <div class="editor">
-            <div id="status"></div>
+            <div id="notif"></div>
+
             <div id="tab-profile" class="tab-content active">
                 <div class="card">
-                    <h3>Profil & Bio</h3>
-                    <label>Nama Display</label>
+                    <h3>Profil & Bio Bisnis</h3>
+                    <label>Nama Profesional</label>
                     <input type="text" id="upd-name" oninput="livePreview()">
-                    <label>Slogan / Bio Bisnis</label>
+                    <label>Bio / Slogan</label>
                     <textarea id="upd-bio" rows="4" oninput="livePreview()"></textarea>
-                    <button class="btn btn-primary" onclick="saveChanges('bio')">PUBLISH PERUBAHAN BIO</button>
+                    <button class="btn btn-primary" onclick="saveToGithub('bio')">PUBLISH KE WEBSITE</button>
                 </div>
             </div>
+
             <div id="tab-add" class="tab-content">
                 <div class="card">
                     <h3>Tambah Konten Baru</h3>
-                    <input type="text" id="p-title" placeholder="Nama Project">
+                    <input type="text" id="p-title" placeholder="Nama Project/Produk">
                     <select id="p-type">
-                        <option value="image">Foto / Gambar</option>
+                        <option value="image">Foto (Link Gambar)</option>
                         <option value="video">Video (YouTube Link)</option>
                     </select>
-                    <input type="text" id="p-img" placeholder="URL Link Gambar/YouTube">
+                    <input type="text" id="p-img" placeholder="Paste link Gambar atau YouTube">
                     <input type="text" id="p-link" placeholder="Link WhatsApp (Opsional)">
-                    <button class="btn btn-primary" onclick="saveChanges('add')">TAMBAHKAN KE WEBSITE</button>
+                    <button class="btn btn-primary" onclick="saveToGithub('add')">TAMBAH SEKARANG</button>
                 </div>
             </div>
+
             <div id="tab-list" class="tab-content">
                 <div class="card">
-                    <h3>Daftar Portofolio</h3>
-                    <div id="list-container">Memuat list...</div>
+                    <h3>Kelola Konten Aktif</h3>
+                    <div id="list-container">Memuat data...</div>
                 </div>
             </div>
+
             <div id="tab-token" class="tab-content">
                 <div class="card">
                     <h3>GitHub Token API</h3>
-                    <p style="font-size:12px; color:gray;">Simpan token Tuan agar sistem bisa menulis data ke GitHub.</p>
                     <input type="password" id="ghToken" placeholder="ghp_...">
                     <button class="btn btn-primary" onclick="saveToken()">UPDATE TOKEN</button>
                 </div>
             </div>
         </div>
+
         <div class="preview-pane">
-            <div style="padding:10px; text-align:center; font-size:12px; font-weight:bold; background:#fff; border-bottom:1px solid #ddd;">LIVE PREVIEW</div>
+            <div style="padding:10px; text-align:center; font-size:12px; font-weight:bold; background:#fff; border-bottom:1px solid #ddd;">LIVE PREVIEW (REAL-TIME)</div>
             <iframe id="web-preview"></iframe>
         </div>
     </div>
@@ -97,27 +104,33 @@
         const REPO = "ikyshinicy/WEB-RIZKY-RERANZA";
         let dbData = { name: "", bio: "", projects: [] };
 
-        // LOGIN PROCESS
+        function handleEnter(e) { if(e.key === 'Enter') processLogin(); }
+
         function processLogin() {
             const u = document.getElementById('user').value;
             const p = document.getElementById('pass').value;
+            const btn = document.getElementById('login-btn');
+            const err = document.getElementById('login-error');
+
             if(u === 'admin' && p === 'eky598939') {
-                sessionStorage.setItem('iky_auth_pro', 'true');
-                document.getElementById('login-overlay').style.display = 'none';
-                initDashboard();
+                btn.innerText = "Processing...";
+                sessionStorage.setItem('iky_pro_valid', 'true');
+                showDashboard();
             } else {
-                document.getElementById('err-msg').innerText = "Username atau Password Salah!";
+                err.innerText = "Login Gagal! Cek kembali User/Pass.";
             }
         }
 
-        function initDashboard() {
-            if(sessionStorage.getItem('iky_auth_pro')) {
+        function showDashboard() {
+            if(sessionStorage.getItem('iky_pro_valid') === 'true') {
                 document.getElementById('login-overlay').style.display = 'none';
-                loadDataFromGitHub();
+                document.getElementById('sidebar-ui').style.display = 'flex';
+                document.getElementById('main-ui').style.display = 'flex';
+                loadFromGH();
             }
         }
 
-        window.onload = initDashboard;
+        window.onload = showDashboard;
 
         function openTab(evt, tabName) {
             document.querySelectorAll(".tab-content").forEach(t => t.classList.remove("active"));
@@ -126,7 +139,7 @@
             evt.currentTarget.classList.add("active");
         }
 
-        async function loadDataFromGitHub() {
+        async function loadFromGH() {
             const token = localStorage.getItem('myGithubToken');
             if(!token) return;
             try {
@@ -140,25 +153,93 @@
                 document.getElementById('upd-bio').value = dbData.bio || "";
                 livePreview();
                 renderList();
-            } catch (e) { console.error("Error loading data"); }
+            } catch (e) { console.log("Token invalid or no data"); }
         }
 
         function livePreview() {
             const preview = document.getElementById('web-preview').contentDocument;
             const name = document.getElementById('upd-name').value;
             const bio = document.getElementById('upd-bio').value;
-            let list = dbData.projects.map(p => `
-                <div style="border:1px solid #eee; margin-bottom:10px; border-radius:5px; overflow:hidden;">
-                    <img src="${p.image}" style="width:100%; height:80px; object-fit:cover;">
-                    <p style="font-size:10px; padding:5px; margin:0;">${p.title}</p>
+            let projects = dbData.projects.map(p => `
+                <div style="border:1px solid #eee; border-radius:8px; overflow:hidden; background:white;">
+                    <img src="${p.image}" style="width:100%; height:70px; object-fit:cover;">
+                    <p style="font-size:10px; margin:5px;">${p.title}</p>
                 </div>
             `).join('');
 
             preview.open();
             preview.write(`
-                <body style="font-family:sans-serif; padding:15px; text-align:center;">
-                    <div style="background:#1877f2; color:white; padding:20px; border-radius:10px;">
-                        <h2 style="margin:0">${name || 'Nama Bisnis'}</h2>
-                        <p style="font-size:12px;">${bio || 'Bio/Slogan'}</p>
+                <body style="font-family:sans-serif; background:#f4f4f4; padding:15px; margin:0; text-align:center;">
+                    <div style="background:#1877f2; color:white; padding:25px 15px; border-radius:0 0 20px 20px; margin:-15px -15px 15px -15px;">
+                        <h2 style="margin:0">${name || 'Nama Anda'}</h2>
+                        <p style="font-size:12px; opacity:0.9">${bio || 'Bio Singkat'}</p>
                     </div>
-                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:20px;">${
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">${projects}</div>
+                </body>
+            `);
+            preview.close();
+        }
+
+        function renderList() {
+            const container = document.getElementById('list-container');
+            container.innerHTML = dbData.projects.map((p, i) => `
+                <div style="display:flex; align-items:center; gap:10px; border-bottom:1px solid #eee; padding:10px 0;">
+                    <img src="${p.image}" width="40" height="40" style="object-fit:cover; border-radius:5px;">
+                    <div style="flex:1; font-size:13px;"><b>${p.title}</b></div>
+                    <button class="btn-danger" onclick="deleteProject(${i})"><i class="fa fa-trash"></i></button>
+                </div>
+            `).join('');
+        }
+
+        async function saveToGithub(type) {
+            const token = localStorage.getItem('myGithubToken');
+            const notif = document.getElementById('notif');
+            if(!token) { alert("Token API belum diisi di Tab Pengaturan!"); return; }
+
+            notif.innerHTML = "<div class='card' style='background:#fff3cd'>⏳ Mengirim data...</div>";
+
+            if(type === 'add') {
+                let img = document.getElementById('p-img').value;
+                const pType = document.getElementById('p-type').value;
+                if(pType === 'video' && img.includes('youtube.com')) {
+                    const id = img.split('v=')[1].split('&')[0];
+                    img = `https://img.youtube.com/vi/${id}/hqdefault.jpg`;
+                }
+                dbData.projects.unshift({
+                    title: document.getElementById('p-title').value,
+                    image: img,
+                    link: document.getElementById('p-link').value,
+                    type: pType
+                });
+            } else {
+                dbData.name = document.getElementById('upd-name').value;
+                dbData.bio = document.getElementById('upd-bio').value;
+            }
+
+            const res = await fetch(`https://api.github.com/repos/${REPO}/contents/data.json`, {
+                method: 'PUT',
+                headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    message: "Update Konten Pro",
+                    content: btoa(JSON.stringify({name: dbData.name, bio: dbData.bio, projects: dbData.projects}, null, 2)),
+                    sha: dbData.sha
+                })
+            });
+            if(res.ok) { alert("Berhasil Terbit!"); location.reload(); }
+            else { alert("Gagal Simpan. Cek Token!"); }
+        }
+
+        function deleteProject(i) {
+            if(confirm("Hapus item ini dari website?")) { dbData.projects.splice(i, 1); saveToGithub('bio'); }
+        }
+
+        function saveToken() {
+            localStorage.setItem('myGithubToken', document.getElementById('ghToken').value);
+            alert("Token Berhasil Disimpan!");
+            location.reload();
+        }
+
+        function logout() { sessionStorage.clear(); location.reload(); }
+    </script>
+</body>
+</html>
