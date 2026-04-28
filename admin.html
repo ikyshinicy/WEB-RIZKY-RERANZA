@@ -3,218 +3,274 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IKY.PRO Admin Master</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
+    <title>Enterprise Pro - Iky Shinicy</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --p: #0062ff; --bg: #f8fafc; --dark: #0f172a; }
-        body { font-family: 'Inter', sans-serif; background: var(--bg); margin: 0; display: flex; height: 100vh; overflow: hidden; }
-
-        /* Sidebar Modern */
-        .sidebar { width: 260px; background: var(--dark); color: white; display: flex; flex-direction: column; flex-shrink: 0; }
-        .logo { padding: 30px 25px; font-family: 'Space Grotesk'; font-size: 24px; color: var(--p); border-bottom: 1px solid #1e293b; }
-        .nav-item { padding: 15px 25px; cursor: pointer; display: flex; align-items: center; gap: 15px; color: #94a3b8; transition: 0.3s; }
-        .nav-item:hover, .nav-item.active { color: white; background: rgba(255,255,255,0.05); border-left: 4px solid var(--p); }
-
-        /* Workspace */
-        .workspace { flex: 1; display: flex; overflow: hidden; }
-        .editor-area { flex: 1; padding: 40px; overflow-y: auto; }
-        .preview-area { width: 450px; background: #e2e8f0; display: flex; flex-direction: column; align-items: center; justify-content: center; border-left: 1px solid #cbd5e1; }
-
-        /* Cards */
-        .glass-card { background: white; border-radius: 20px; padding: 30px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); margin-bottom: 30px; }
-        h3 { margin: 0 0 20px; font-family: 'Space Grotesk'; font-size: 18px; }
-        .input-group { margin-bottom: 20px; }
-        label { display: block; font-size: 12px; font-weight: 800; margin-bottom: 8px; color: #64748b; text-transform: uppercase; }
-        input, textarea, select { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid #e2e8f0; font-size: 14px; box-sizing: border-box; }
-
-        .btn { padding: 16px; border: none; border-radius: 12px; cursor: pointer; font-weight: 700; width: 100%; transition: 0.3s; }
-        .btn-p { background: var(--p); color: white; box-shadow: 0 4px 15px rgba(0,98,255,0.3); }
-        .btn-p:hover { transform: translateY(-2px); opacity: 0.9; }
-
-        /* iPhone Frame */
-        #mobile-wrapper { width: 330px; height: 670px; background: #0f172a; border-radius: 50px; padding: 12px; box-shadow: 0 30px 60px rgba(0,0,0,0.2); position: relative; border: 4px solid #334155; }
-        #mobile-frame { width: 100%; height: 100%; background: white; border-radius: 38px; border: none; overflow: hidden; }
-
-        /* Auth */
-        #login-screen { position: fixed; inset: 0; background: #f8fafc; z-index: 10000; display: flex; align-items: center; justify-content: center; }
-        .tab-pane { display: none; }
-        .tab-pane.active { display: block; }
+        :root { --primary: #1877f2; --dark: #1c1e21; --bg: #f0f2f5; --white: #ffffff; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); margin: 0; display: flex; height: 100vh; overflow: hidden; }
+        .sidebar { width: 240px; background: var(--dark); color: white; display: flex; flex-direction: column; flex-shrink: 0; }
+        .nav-item { padding: 15px 20px; cursor: pointer; display: flex; align-items: center; gap: 12px; transition: 0.3s; color: #ced4da; font-size: 14px; }
+        .nav-item:hover, .nav-item.active { background: var(--primary); color: white; }
+        .container { flex: 1; display: flex; overflow: hidden; }
+        .editor { flex: 1.2; padding: 25px; overflow-y: auto; border-right: 1px solid #ddd; }
+        .preview-pane { flex: 0.8; background: #e4e6eb; display: flex; flex-direction: column; }
+        #web-preview { flex: 1; border: none; background: white; margin: 15px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        .card { background: var(--white); padding: 20px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        input, textarea, select { width: 100%; padding: 12px; margin: 8px 0 15px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; font-size: 14px; }
+        .btn { padding: 12px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; font-size: 14px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-danger { background: #dc3545; color: white; padding: 6px 12px; font-size: 12px; width: auto; }
+        #login-overlay { position: fixed; inset: 0; background: var(--bg); display: flex; justify-content: center; align-items: center; z-index: 1000; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        #link-preview-box { width: 100%; height: 200px; border: 1px solid #ddd; border-radius: 8px; margin-top: 10px; background: #fff; display: none; overflow: hidden; }
+        #preview-img { width: 100%; height: 150px; object-fit: cover; border-radius: 6px; display: none; background: #eee; margin-bottom: 10px; }
     </style>
 </head>
 <body>
 
-    <div id="login-screen">
-        <div class="glass-card" style="width: 350px; text-align: center;">
-            <h2 style="font-family: 'Space Grotesk';">IKY.PRO Login</h2>
-            <input type="password" id="adm-pass" placeholder="Password Master" style="text-align: center;" onkeypress="if(event.key==='Enter')auth()">
-            <button class="btn btn-p" onclick="auth()" style="margin-top: 15px;">UNLOCK</button>
+    <div id="login-overlay">
+        <div class="card" style="width: 350px; text-align: center;">
+            <i class="fa fa-user-tie fa-3x" style="color:var(--primary); margin-bottom:15px;"></i>
+            <h2>Tuan Iky Login</h2>
+            <input type="text" id="user" placeholder="Username" onkeypress="if(event.key==='Enter')processLogin()">
+            <input type="password" id="pass" placeholder="Password" onkeypress="if(event.key==='Enter')processLogin()">
+            <button class="btn btn-primary" onclick="processLogin()">LOGIN SYSTEM</button>
         </div>
     </div>
 
-    <div class="sidebar" id="sidebar" style="display:none;">
-        <div class="logo">IKY.PRO</div>
-        <div class="nav-item active" onclick="tab(event, 'design')"><i class="fa fa-palette"></i> Design</div>
-        <div class="nav-item" onclick="tab(event, 'content')"><i class="fa fa-plus"></i> Add Content</div>
-        <div class="nav-item" onclick="tab(event, 'database')"><i class="fa fa-layer-group"></i> Library</div>
-        <div class="nav-item" onclick="saveKey()" style="margin-top:auto; padding: 25px;"><i class="fa fa-key"></i> Token</div>
+    <div class="sidebar" id="sidebar-ui" style="display:none;">
+        <div style="padding: 25px; font-weight: bold; border-bottom: 1px solid #333; font-size: 18px; color: var(--primary);">IKY ENTERPRISE v5</div>
+        <div class="nav-item active" onclick="openTab(event, 'tab-profile')"><i class="fa fa-id-card"></i> Profil</div>
+        <div class="nav-item" onclick="openTab(event, 'tab-add')"><i class="fa fa-plus-square"></i> Upload / Link</div>
+        <div class="nav-item" onclick="openTab(event, 'tab-list')"><i class="fa fa-database"></i> Kelola Konten</div>
+        <div class="nav-item" onclick="openTab(event, 'tab-token')"><i class="fa fa-key"></i> API Token</div>
+        <div class="nav-item" onclick="logout()" style="margin-top:auto;"><i class="fa fa-power-off"></i> Logout</div>
     </div>
 
-    <div class="workspace" id="main" style="display:none;">
-        <div class="editor-area">
-            <div id="design" class="tab-pane active">
-                <div class="glass-card">
-                    <h3>Visual Identity</h3>
-                    <div class="input-group"><label>Profile Name</label><input type="text" id="biz-name" oninput="sync()"></div>
-                    <div class="input-group"><label>Bio / Slogan</label><textarea id="biz-bio" rows="2" oninput="sync()"></textarea></div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                        <div class="input-group"><label>Accent</label><input type="color" id="biz-color" oninput="sync()"></div>
-                        <div class="input-group"><label>Text</label><input type="color" id="biz-text" oninput="sync()"></div>
-                    </div>
-                </div>
-                <button class="btn btn-p" onclick="publish()"><i class="fa fa-rocket"></i> DEPLOY TO CLOUD</button>
-            </div>
+    <div class="container" id="main-ui" style="display:none;">
+        <div class="editor">
+            <div id="notif"></div>
 
-            <div id="content" class="tab-pane">
-                <div class="glass-card">
-                    <h3>New Project</h3>
-                    <div class="input-group"><label>Title</label><input type="text" id="post-title"></div>
-                    <div class="input-group"><label>Category</label><input type="text" id="post-cat" placeholder="e.g. Digital Branding"></div>
-                    <div class="input-group">
-                        <label>Image Source</label>
-                        <input type="file" id="file-in" onchange="handleFile()">
-                    </div>
-                    <button class="btn btn-p" onclick="addProject()">ADD TO PREVIEW</button>
+            <div id="tab-profile" class="tab-content active">
+                <div class="card">
+                    <h3>Setting Brand</h3>
+                    <input type="text" id="upd-name" placeholder="Nama Brand" oninput="livePreview()">
+                    <textarea id="upd-bio" rows="4" placeholder="Slogan / Deskripsi" oninput="livePreview()"></textarea>
+                    <button class="btn btn-primary" onclick="saveToGithub('bio')">SIMPAN BRANDING</button>
                 </div>
             </div>
 
-            <div id="database" class="tab-pane">
-                <div class="glass-card">
-                    <h3>Media Library</h3>
-                    <div id="lib-list"></div>
+            <div id="tab-add" class="tab-content">
+                <div class="card">
+                    <h3>Tambah Konten Baru</h3>
+                    <input type="text" id="p-title" placeholder="Judul Project (Contoh: E-book Branding)">
+                    <select id="p-type" onchange="toggleInput()">
+                        <option value="image">Upload Foto (Galeri)</option>
+                        <option value="link">Project Link (Website/Web-App)</option>
+                        <option value="video">YouTube Video</option>
+                    </select>
+                    
+                    <div id="input-file">
+                        <input type="file" id="file-upload" accept="image/*" onchange="previewFile()">
+                        <img id="preview-img">
+                    </div>
+
+                    <div id="input-link" style="display:none;">
+                        <input type="text" id="p-url" placeholder="Masukkan URL Website (https://...)" oninput="updateLinkPreview()">
+                        <div id="link-preview-box">
+                            <p style="font-size:10px; color:gray; text-align:center; margin-top:80px;">Preview Website Tampil di Sini</p>
+                            <iframe id="link-frame" style="width:100%; height:100%; border:none; display:none;"></iframe>
+                        </div>
+                    </div>
+
+                    <div id="input-yt" style="display:none;">
+                        <input type="text" id="p-yt" placeholder="Link YouTube">
+                    </div>
+
+                    <textarea id="p-prompt" rows="2" placeholder="Copy-Paste Prompt AI (Opsional)"></textarea>
+                    <button class="btn btn-primary" onclick="saveToGithub('add')">PUBLISH KE CLOUD</button>
+                </div>
+            </div>
+
+            <div id="tab-list" class="tab-content">
+                <div class="card">
+                    <h3>List Database</h3>
+                    <div id="list-container">Memuat...</div>
+                </div>
+            </div>
+
+            <div id="tab-token" class="tab-content">
+                <div class="card">
+                    <h3>GitHub API</h3>
+                    <input type="password" id="ghToken" placeholder="ghp_xxx">
+                    <button class="btn btn-primary" onclick="saveToken()">UPDATE API</button>
                 </div>
             </div>
         </div>
 
-        <div class="preview-area">
-            <div style="margin-bottom: 15px; font-weight: 800; font-size: 11px; color: #64748b; letter-spacing: 2px;">LIVE SIMULATION</div>
-            <div id="mobile-wrapper"><iframe id="mobile-frame"></iframe></div>
+        <div class="preview-pane">
+            <div style="padding:10px; text-align:center; font-size:11px; background:#fff; border-bottom:1px solid #ddd;">LIVE MOBILE PREVIEW</div>
+            <iframe id="web-preview"></iframe>
         </div>
     </div>
 
     <script>
         const REPO = "ikyshinicy/WEB-RIZKY-RERANZA";
-        let db = { config: {}, projects: [] };
-        let tempImg = "";
+        let dbData = { name: "", bio: "", projects: [] };
+        let base64Image = "";
 
-        function auth() {
-            if(document.getElementById('adm-pass').value === 'eky598939') {
-                sessionStorage.setItem('iky_auth', 'true');
-                document.getElementById('login-screen').style.display = 'none';
-                document.getElementById('sidebar').style.display = 'flex';
-                document.getElementById('main').style.display = 'flex';
-                init();
+        function processLogin() {
+            if(document.getElementById('user').value==='admin' && document.getElementById('pass').value==='eky598939') {
+                sessionStorage.setItem('iky_v5_auth', 'true');
+                location.reload();
+            } else { alert("Akses Ditolak!"); }
+        }
+
+        window.onload = () => {
+            if(sessionStorage.getItem('iky_v5_auth')) {
+                document.getElementById('login-overlay').style.display='none';
+                document.getElementById('sidebar-ui').style.display='flex';
+                document.getElementById('main-ui').style.display='flex';
+                loadFromGH();
+            }
+        };
+
+        function openTab(evt, tabName) {
+            document.querySelectorAll(".tab-content").forEach(t => t.classList.remove("active"));
+            document.querySelectorAll(".nav-item").forEach(n => n.classList.remove("active"));
+            document.getElementById(tabName).classList.add("active");
+            evt.currentTarget.classList.add("active");
+        }
+
+        function toggleInput() {
+            const t = document.getElementById('p-type').value;
+            document.getElementById('input-file').style.display = t==='image'?'block':'none';
+            document.getElementById('input-link').style.display = t==='link'?'block':'none';
+            document.getElementById('input-yt').style.display = t==='video'?'block':'none';
+        }
+
+        function previewFile() {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                base64Image = e.target.result;
+                document.getElementById('preview-img').src = e.target.result;
+                document.getElementById('preview-img').style.display = 'block';
+            };
+            reader.readAsDataURL(document.getElementById('file-upload').files[0]);
+        }
+
+        function updateLinkPreview() {
+            const url = document.getElementById('p-url').value;
+            const box = document.getElementById('link-preview-box');
+            const frame = document.getElementById('link-frame');
+            if(url.startsWith('http')) {
+                box.style.display = 'block';
+                frame.src = url;
+                frame.style.display = 'block';
+                box.querySelector('p').style.display = 'none';
             }
         }
-        if(sessionStorage.getItem('iky_auth')) auth();
 
-        async function init() {
-            const token = localStorage.getItem('iky_gh_token');
-            if(!token) return alert("Token belum di-set!");
+        async function loadFromGH() {
+            const token = localStorage.getItem('myGithubToken');
+            if(!token) return;
             const res = await fetch(`https://api.github.com/repos/${REPO}/contents/data.json`, {
                 headers: { 'Authorization': `token ${token}` }
             });
             const json = await res.json();
-            db = JSON.parse(atob(json.content));
-            db.sha = json.sha;
-            
-            document.getElementById('biz-name').value = db.name || "";
-            document.getElementById('biz-bio').value = db.bio || "";
-            document.getElementById('biz-color').value = (db.config && db.config.color) || "#0062ff";
-            document.getElementById('biz-text').value = (db.config && db.config.text) || "#ffffff";
-            
-            sync(); render();
+            dbData = JSON.parse(atob(json.content));
+            dbData.sha = json.sha;
+            document.getElementById('upd-name').value = dbData.name;
+            document.getElementById('upd-bio').value = dbData.bio;
+            livePreview(); renderList();
         }
 
-        function sync() {
-            const frame = document.getElementById('mobile-frame').contentDocument;
-            const name = document.getElementById('biz-name').value;
-            const bio = document.getElementById('biz-bio').value;
-            const color = document.getElementById('biz-color').value;
-            const text = document.getElementById('biz-text').value;
-
-            let cards = (db.projects || []).map(p => `
-                <div style="background:white; border-radius:15px; overflow:hidden; margin-bottom:20px; box-shadow:0 10px 15px rgba(0,0,0,0.05);">
-                    <img src="${p.image}" style="width:100%; height:140px; object-fit:cover;">
-                    <div style="padding:15px;"><b style="font-size:14px; display:block;">${p.title}</b><small style="color:gray;">${p.cat || ''}</small></div>
+        function livePreview() {
+            const preview = document.getElementById('web-preview').contentDocument;
+            const name = document.getElementById('upd-name').value;
+            const bio = document.getElementById('upd-bio').value;
+            let cards = dbData.projects.map(p => `
+                <div style="background:white; border-radius:10px; margin-bottom:12px; box-shadow:0 3px 6px rgba(0,0,0,0.1); overflow:hidden;">
+                    <img src="${p.image || 'https://via.placeholder.com/150?text=WEB+PROJECT'}" style="width:100%; height:90px; object-fit:cover">
+                    <div style="padding:8px; font-size:11px;"><b>${p.title}</b></div>
                 </div>
             `).join('');
 
-            frame.open();
-            frame.write(`
-                <style>body{margin:0;font-family:'Inter',sans-serif;background:#f8fafc;} .h{background:${color};color:${text};padding:50px 20px;text-align:center;} h1{margin:0;font-size:24px;} p{opacity:0.8;font-size:13px;}</style>
-                <div class="h"><h1>${name}</h1><p>${bio}</p></div>
-                <div style="padding:20px;">${cards}</div>
-            `);
-            frame.close();
+            preview.open();
+            preview.write(`<body style="font-family:sans-serif; background:#f4f7f6; margin:0; padding:15px; text-align:center;">
+                <div style="background:linear-gradient(to right, #1877f2, #0056b3); color:white; padding:25px 10px; border-radius:15px;">
+                    <h2 style="margin:0">${name}</h2><p style="font-size:12px; opacity:0.8">${bio}</p>
+                </div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:20px;">${cards}</div>
+            </body>`);
+            preview.close();
         }
 
-        function handleFile() {
-            const reader = new FileReader();
-            reader.onload = (e) => tempImg = e.target.result;
-            reader.readAsDataURL(document.getElementById('file-in').files[0]);
+        function renderList() {
+            const container = document.getElementById('list-container');
+            container.innerHTML = dbData.projects.map((p, i) => `
+                <div style="background:#f9f9f9; padding:12px; border-radius:8px; margin-bottom:10px; border:1px solid #ddd;">
+                    <div style="display:flex; align-items:center; gap:12px">
+                        <img src="${p.image || 'https://via.placeholder.com/50'}" width="50" height="50" style="object-fit:cover; border-radius:5px">
+                        <div style="flex:1">
+                            <b style="font-size:13px">${p.title}</b><br>
+                            <span style="font-size:10px; color:blue;">Type: ${p.type}</span>
+                        </div>
+                        <button class="btn-danger" onclick="deleteItem(${i})"><i class="fa fa-trash"></i></button>
+                    </div>
+                    <div style="margin-top:10px; display:flex; gap:10px;">
+                        <button onclick="copyP('${p.prompt || ''}')" style="font-size:11px;"><i class="fa fa-copy"></i> Prompt</button>
+                        <button onclick="window.open('${p.url || '#'}','_blank')" style="font-size:11px;"><i class="fa fa-external-link-alt"></i> Visit Link</button>
+                    </div>
+                </div>
+            `).join('');
         }
 
-        function addProject() {
-            db.projects = db.projects || [];
-            db.projects.unshift({
-                title: document.getElementById('post-title').value,
-                cat: document.getElementById('post-cat').value,
-                image: tempImg || "https://via.placeholder.com/150"
-            });
-            sync(); render();
-            alert("Ditambahkan ke Preview! Jangan lupa klik 'DEPLOY'.");
-        }
+        async function saveToGithub(type) {
+            const token = localStorage.getItem('myGithubToken');
+            if(!token) return alert("Token Kosong!");
+            document.getElementById('notif').innerHTML = "<div class='card' style='background:#fff3cd'>⏳ Sinkronisasi Cloud...</div>";
 
-        async function publish() {
-            const token = localStorage.getItem('iky_gh_token');
-            db.name = document.getElementById('biz-name').value;
-            db.bio = document.getElementById('biz-bio').value;
-            db.config = { color: document.getElementById('biz-color').value, text: document.getElementById('biz-text').value };
+            if(type === 'add') {
+                let img = base64Image;
+                let url = document.getElementById('p-url').value;
+                const pType = document.getElementById('p-type').value;
+                
+                if(pType === 'video') {
+                    const id = document.getElementById('p-yt').value.split('v=')[1].split('&')[0];
+                    img = `https://img.youtube.com/vi/${id}/hqdefault.jpg`;
+                    url = document.getElementById('p-yt').value;
+                }
+                
+                dbData.projects.unshift({
+                    title: document.getElementById('p-title').value,
+                    image: img,
+                    url: url,
+                    prompt: document.getElementById('p-prompt').value,
+                    type: pType
+                });
+            } else {
+                dbData.name = document.getElementById('upd-name').value;
+                dbData.bio = document.getElementById('upd-bio').value;
+            }
 
             const res = await fetch(`https://api.github.com/repos/${REPO}/contents/data.json`, {
                 method: 'PUT',
-                headers: { 'Authorization': `token ${token}` },
+                headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    message: "Restore System IKY.PRO",
-                    content: btoa(unescape(encodeURIComponent(JSON.stringify(db, null, 2)))),
-                    sha: db.sha
+                    message: "Enterprise Update v5",
+                    content: btoa(unescape(encodeURIComponent(JSON.stringify({name: dbData.name, bio: dbData.bio, projects: dbData.projects}, null, 2)))),
+                    sha: dbData.sha
                 })
             });
-            if(res.ok) alert("Web Berhasil Diupdate!");
+            if(res.ok) location.reload();
         }
 
-        function render() {
-            document.getElementById('lib-list').innerHTML = (db.projects || []).map((p, i) => `
-                <div style="display:flex; align-items:center; gap:15px; padding:12px; border-bottom:1px solid #eee;">
-                    <img src="${p.image}" width="40" height="40" style="object-fit:cover; border-radius:8px;">
-                    <div style="flex:1; font-size:13px;"><b>${p.title}</b></div>
-                    <button onclick="db.projects.splice(${i},1); sync(); render();" style="color:red; border:none; background:none; cursor:pointer;"><i class="fa fa-trash"></i></button>
-                </div>
-            `).join('');
-        }
-
-        function tab(e, id) {
-            document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-            e.currentTarget.classList.add('active');
-        }
-
-        function saveKey() {
-            const key = prompt("Paste GitHub Token Baru:");
-            if(key) { localStorage.setItem('iky_gh_token', key); location.reload(); }
-        }
+        function copyP(t) { navigator.clipboard.writeText(t); alert("Prompt Copied!"); }
+        function deleteItem(i) { if(confirm("Hapus Project?")) { dbData.projects.splice(i,1); saveToGithub('bio'); } }
+        function saveToken() { localStorage.setItem('myGithubToken', document.getElementById('ghToken').value); location.reload(); }
+        function logout() { sessionStorage.clear(); location.reload(); }
     </script>
 </body>
 </html>
