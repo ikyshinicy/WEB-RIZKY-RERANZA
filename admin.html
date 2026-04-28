@@ -1,120 +1,52 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IKY.PRO CORE v9</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        :root { --p: #0062ff; --bg: #0f172a; --card: #1e293b; --text: #f8fafc; }
-        body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color: var(--text); margin: 0; display: flex; height: 100vh; }
+// Baris ini harus ada di atas agar fungsi tahu mau kirim data ke mana
+const REPO = "ikyshinicy/nama-repo-tuan"; 
+
+async function pushUpdate() {
+    const token = localStorage.getItem('iky_token');
+    if(!token) return alert("Maaf Tuan, Token belum ditanam di localStorage!");
+
+    const body = {
+        name: document.getElementById('db-name').value,
+        bio: document.getElementById('db-bio').value,
+        projects: [] 
+    };
+
+    const btn = document.querySelector('.btn[onclick="pushUpdate()"]');
+    if(btn) {
+        btn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> PUSHING...';
+        btn.disabled = true;
+    }
+
+    try {
+        const getRes = await fetch(`https://api.github.com/repos/${REPO}/contents/data.json`, {
+            headers: { 'Authorization': `token ${token}` }
+        });
         
-        .sidebar { width: 260px; background: #020617; border-right: 1px solid #334155; display: flex; flex-direction: column; }
-        .main { flex: 1; display: flex; overflow: hidden; }
-        .editor { flex: 1; padding: 40px; overflow-y: auto; }
-        .preview { width: 450px; background: #111827; display: flex; align-items: center; justify-content: center; border-left: 1px solid #334155; }
+        const currentData = await getRes.json();
+        const latestSha = currentData.sha;
 
-        .card { background: var(--card); border-radius: 16px; padding: 24px; border: 1px solid #334155; margin-bottom: 20px; }
-        input, textarea { width: 100%; padding: 12px; background: #0f172a; border: 1px solid #334155; border-radius: 8px; color: white; margin-top: 8px; box-sizing: border-box; }
-        .btn { background: var(--p); color: white; border: none; padding: 14px; border-radius: 8px; cursor: pointer; font-weight: 700; width: 100%; transition: 0.2s; }
-        .btn:active { transform: scale(0.98); }
+        const res = await fetch(`https://api.github.com/repos/${REPO}/contents/data.json`, {
+            method: 'PUT',
+            headers: { 
+                'Authorization': `token ${token}`,
+                'Content-Type': 'application/json' 
+            },
+            body: JSON.stringify({
+                message: "Update via Core Engine - Tuan Iky",
+                content: btoa(unescape(encodeURIComponent(JSON.stringify(body, null, 2)))),
+                sha: latestSha 
+            })
+        });
 
-        #phone { width: 320px; height: 650px; background: #000; border-radius: 40px; border: 8px solid #334155; position: relative; overflow: hidden; }
-        #phone iframe { width: 100%; height: 100%; border: none; background: white; }
-
-        #auth-overlay { position: fixed; inset: 0; background: #020617; z-index: 999; display: flex; align-items: center; justify-content: center; }
-    </style>
-</head>
-<body>
-
-    <div id="auth-overlay">
-        <div class="card" style="width: 320px; text-align: center;">
-            <h2 style="color:var(--p)">IKY.PRO CORE</h2>
-            <input type="password" id="sys-pass" placeholder="Password System">
-            <input type="password" id="gh-token" placeholder="GitHub Token">
-            <button class="btn" style="margin-top:20px" onclick="initSystem()">CONNECT</button>
-        </div>
-    </div>
-
-    <div class="sidebar">
-        <div style="padding:30px; font-weight:800; font-size:20px; border-bottom:1px solid #334155">MASTER CTRL</div>
-        <div style="padding:20px; color:var(--p)"><i class="fa fa-code"></i> Direct API Mode</div>
-    </div>
-
-    <div class="main">
-        <div class="editor">
-            <div class="card">
-                <h3>Site Identity</h3>
-                <label>Name</label><input type="text" id="db-name" oninput="sync()">
-                <label style="margin-top:15px; display:block;">Bio</label><textarea id="db-bio" rows="3" oninput="sync()"></textarea>
-            </div>
-            <button class="btn" onclick="pushUpdate()"><i class="fa fa-save"></i> PUSH TO REPO</button>
-        </div>
-
-        <div class="preview">
-            <div id="phone"><iframe id="live"></iframe></div>
-        </div>
-    </div>
-
-    <script>
-        const REPO = "ikyshinicy/WEB-RIZKY-RERANZA";
-        let state = { sha: "" };
-
-        async function initSystem() {
-            const pass = document.getElementById('sys-pass').value;
-            const token = document.getElementById('gh-token').value || localStorage.getItem('iky_token');
-            
-            if(pass === 'eky598939') {
-                if(token) localStorage.setItem('iky_token', token);
-                document.getElementById('auth-overlay').style.display = 'none';
-                fetchData();
-            }
+        if(res.ok) {
+            alert("✅ UPDATE BERHASIL!");
+            location.reload();
+        } else {
+            alert("❌ GAGAL PUSH: Pastikan Repo & Token Benar");
         }
-
-        async function fetchData() {
-            const token = localStorage.getItem('iky_token');
-            const res = await fetch(`https://api.github.com/repos/${REPO}/contents/data.json`, {
-                headers: { 'Authorization': `token ${token}` }
-            });
-            const data = await res.json();
-            const content = JSON.parse(atob(data.content));
-            state.sha = data.sha;
-            
-            document.getElementById('db-name').value = content.name || "";
-            document.getElementById('db-bio').value = content.bio || "";
-            sync();
-        }
-
-        function sync() {
-            const frame = document.getElementById('live').contentDocument;
-            const n = document.getElementById('db-name').value;
-            const b = document.getElementById('db-bio').value;
-            frame.open();
-            frame.write(`
-                <style>body{margin:0;font-family:sans-serif;text-align:center;} .h{background:#0062ff;color:white;padding:50px 20px;}</style>
-                <div class="h"><h1>${n}</h1><p>${b}</p></div>
-            `);
-            frame.close();
-        }
-
-        async function pushUpdate() {
-            const token = localStorage.getItem('iky_token');
-            const body = {
-                name: document.getElementById('db-name').value,
-                bio: document.getElementById('db-bio').value
-            };
-
-            const res = await fetch(`https://api.github.com/repos/${REPO}/contents/data.json`, {
-                method: 'PUT',
-                headers: { 'Authorization': `token ${token}` },
-                body: JSON.stringify({
-                    message: "Core Engine Update",
-                    content: btoa(unescape(encodeURIComponent(JSON.stringify(body, null, 2)))),
-                    sha: state.sha
-                })
-            });
-            if(res.ok) { alert("PUSH SUCCESS"); location.reload(); }
-        }
-    </script>
-</body>
-</html>
+    } catch (err) {
+        alert("⚠️ ERROR: " + err.message);
+    } finally {
+        if(btn) btn.disabled = false;
+    }
+}
