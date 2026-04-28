@@ -3,130 +3,117 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IKY.PRO EMERGENCY FIX</title>
+    <title>IKY.PRO CORE v9</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&display=swap" rel="stylesheet">
     <style>
-        :root { --p: #0062ff; --bg: #f8fafc; --dark: #0f172a; }
-        body { font-family: 'Inter', sans-serif; background: var(--bg); margin: 0; height: 100vh; overflow: hidden; }
+        :root { --p: #0062ff; --bg: #0f172a; --card: #1e293b; --text: #f8fafc; }
+        body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color: var(--text); margin: 0; display: flex; height: 100vh; }
         
-        /* Full Screen Login - Muncul Pertama Kali */
-        #login-screen { position: fixed; inset: 0; background: #0f172a; z-index: 9999; display: flex; align-items: center; justify-content: center; flex-direction: column; color: white; }
-        .login-card { background: #1e293b; padding: 40px; border-radius: 24px; text-align: center; width: 350px; border: 1px solid #334155; }
-        
-        .sidebar { width: 250px; background: var(--dark); color: white; display: flex; flex-direction: column; flex-shrink: 0; }
-        .main { flex: 1; display: flex; display: none; } /* Tersembunyi sebelum login */
-        .editor { flex: 1; padding: 30px; overflow-y: auto; }
-        .preview { width: 420px; background: #cbd5e1; display: flex; align-items: center; justify-content: center; border-left: 1px solid #ddd; }
-        
-        .card { background: white; border-radius: 20px; padding: 25px; box-shadow: 0 10px 20px rgba(0,0,0,0.05); margin-bottom: 20px; color: #334155; }
-        input { width: 100%; padding: 14px; border: 1px solid #e2e8f0; border-radius: 12px; margin-top: 8px; box-sizing: border-box; }
-        .btn { background: var(--p); color: white; border: none; padding: 16px; border-radius: 12px; cursor: pointer; font-weight: 700; width: 100%; margin-top: 15px; }
-        
-        #phone { width: 300px; height: 600px; background: #000; border-radius: 40px; padding: 10px; border: 4px solid #334155; }
-        #phone iframe { width: 100%; height: 100%; background: white; border-radius: 30px; border: none; }
+        .sidebar { width: 260px; background: #020617; border-right: 1px solid #334155; display: flex; flex-direction: column; }
+        .main { flex: 1; display: flex; overflow: hidden; }
+        .editor { flex: 1; padding: 40px; overflow-y: auto; }
+        .preview { width: 450px; background: #111827; display: flex; align-items: center; justify-content: center; border-left: 1px solid #334155; }
+
+        .card { background: var(--card); border-radius: 16px; padding: 24px; border: 1px solid #334155; margin-bottom: 20px; }
+        input, textarea { width: 100%; padding: 12px; background: #0f172a; border: 1px solid #334155; border-radius: 8px; color: white; margin-top: 8px; box-sizing: border-box; }
+        .btn { background: var(--p); color: white; border: none; padding: 14px; border-radius: 8px; cursor: pointer; font-weight: 700; width: 100%; transition: 0.2s; }
+        .btn:active { transform: scale(0.98); }
+
+        #phone { width: 320px; height: 650px; background: #000; border-radius: 40px; border: 8px solid #334155; position: relative; overflow: hidden; }
+        #phone iframe { width: 100%; height: 100%; border: none; background: white; }
+
+        #auth-overlay { position: fixed; inset: 0; background: #020617; z-index: 999; display: flex; align-items: center; justify-content: center; }
     </style>
 </head>
 <body>
 
-    <div id="login-screen">
-        <div class="login-card">
-            <h1 style="margin-bottom:10px;">IKY.PRO CORE</h1>
-            <p style="color: #94a3b8; margin-bottom: 25px;">Verified for Tuan Iky</p>
-            <input type="password" id="pass-input" placeholder="Password: eky598939" style="margin-bottom: 10px; background: #0f172a; color: white; border: 1px solid #334155;">
-            <input type="password" id="token-input" placeholder="GitHub Token (Opsional)" style="background: #0f172a; color: white; border: 1px solid #334155;">
-            <button class="btn" onclick="startSystem()">UNLOCK & LOAD DATA</button>
+    <div id="auth-overlay">
+        <div class="card" style="width: 320px; text-align: center;">
+            <h2 style="color:var(--p)">IKY.PRO CORE</h2>
+            <input type="password" id="sys-pass" placeholder="Password System">
+            <input type="password" id="gh-token" placeholder="GitHub Token">
+            <button class="btn" style="margin-top:20px" onclick="initSystem()">CONNECT</button>
         </div>
     </div>
 
-    <div id="app-content" style="display: flex; height: 100vh;">
-        <div class="sidebar">
-            <div style="padding: 30px 25px; font-weight: 800; color: var(--p);">IKY.PRO MASTER</div>
-            <div style="padding: 15px 25px; color: white; background: rgba(255,255,255,0.1); border-left: 4px solid var(--p);">
-                <i class="fa fa-home"></i> Dashboard
+    <div class="sidebar">
+        <div style="padding:30px; font-weight:800; font-size:20px; border-bottom:1px solid #334155">MASTER CTRL</div>
+        <div style="padding:20px; color:var(--p)"><i class="fa fa-code"></i> Direct API Mode</div>
+    </div>
+
+    <div class="main">
+        <div class="editor">
+            <div class="card">
+                <h3>Site Identity</h3>
+                <label>Name</label><input type="text" id="db-name" oninput="sync()">
+                <label style="margin-top:15px; display:block;">Bio</label><textarea id="db-bio" rows="3" oninput="sync()"></textarea>
             </div>
-            <div style="margin-top:auto; padding: 20px; font-size: 11px; color: #475569;">GitHub Mode Active</div>
+            <button class="btn" onclick="pushUpdate()"><i class="fa fa-save"></i> PUSH TO REPO</button>
         </div>
 
-        <div class="main" id="main-ui" style="display: flex; flex: 1;">
-            <div class="editor">
-                <div class="card">
-                    <h3>Update Site</h3>
-                    <label>Display Name</label>
-                    <input type="text" id="name" oninput="sync()">
-                    <label style="margin-top:15px; display:block;">Bio</label>
-                    <input type="text" id="bio" oninput="sync()">
-                </div>
-                <button class="btn" onclick="saveData()">PUBLISH TO GITHUB</button>
-            </div>
-            <div class="preview">
-                <div id="phone"><iframe id="live"></iframe></div>
-            </div>
+        <div class="preview">
+            <div id="phone"><iframe id="live"></iframe></div>
         </div>
     </div>
 
     <script>
         const REPO = "ikyshinicy/WEB-RIZKY-RERANZA";
-        let currentDB = {};
+        let state = { sha: "" };
 
-        function startSystem() {
-            const pass = document.getElementById('pass-input').value;
-            const customToken = document.getElementById('token-input').value;
+        async function initSystem() {
+            const pass = document.getElementById('sys-pass').value;
+            const token = document.getElementById('gh-token').value || localStorage.getItem('iky_token');
             
             if(pass === 'eky598939') {
-                if(customToken) localStorage.setItem('iky_gh_token', customToken);
-                document.getElementById('login-screen').style.display = 'none';
-                loadFromGitHub();
-            } else {
-                alert("Password Salah!");
+                if(token) localStorage.setItem('iky_token', token);
+                document.getElementById('auth-overlay').style.display = 'none';
+                fetchData();
             }
         }
 
-        async function loadFromGitHub() {
-            const token = localStorage.getItem('iky_gh_token');
-            if(!token) return alert("Token tidak ditemukan. Isi di kotak login tadi.");
-
-            try {
-                const res = await fetch(`https://api.github.com/repos/${REPO}/contents/data.json`, {
-                    headers: { 'Authorization': `token ${token}` }
-                });
-                const data = await res.json();
-                currentDB = JSON.parse(atob(data.content));
-                currentDB.sha = data.sha;
-
-                document.getElementById('name').value = currentDB.name || "";
-                document.getElementById('bio').value = currentDB.bio || "";
-                sync();
-            } catch(e) {
-                alert("Gagal koneksi ke GitHub. Cek Token!");
-            }
+        async function fetchData() {
+            const token = localStorage.getItem('iky_token');
+            const res = await fetch(`https://api.github.com/repos/${REPO}/contents/data.json`, {
+                headers: { 'Authorization': `token ${token}` }
+            });
+            const data = await res.json();
+            const content = JSON.parse(atob(data.content));
+            state.sha = data.sha;
+            
+            document.getElementById('db-name').value = content.name || "";
+            document.getElementById('db-bio').value = content.bio || "";
+            sync();
         }
 
         function sync() {
             const frame = document.getElementById('live').contentDocument;
-            const n = document.getElementById('name').value;
-            const b = document.getElementById('bio').value;
+            const n = document.getElementById('db-name').value;
+            const b = document.getElementById('db-bio').value;
             frame.open();
-            frame.write(`<style>body{text-align:center;font-family:sans-serif;margin:0;} .h{background:#0062ff;color:white;padding:40px;}</style>
-                <div class="h"><h1>${n}</h1><p>${b}</p></div>`);
+            frame.write(`
+                <style>body{margin:0;font-family:sans-serif;text-align:center;} .h{background:#0062ff;color:white;padding:50px 20px;}</style>
+                <div class="h"><h1>${n}</h1><p>${b}</p></div>
+            `);
             frame.close();
         }
 
-        async function saveData() {
-            const token = localStorage.getItem('iky_gh_token');
-            currentDB.name = document.getElementById('name').value;
-            currentDB.bio = document.getElementById('bio').value;
+        async function pushUpdate() {
+            const token = localStorage.getItem('iky_token');
+            const body = {
+                name: document.getElementById('db-name').value,
+                bio: document.getElementById('db-bio').value
+            };
 
             const res = await fetch(`https://api.github.com/repos/${REPO}/contents/data.json`, {
                 method: 'PUT',
                 headers: { 'Authorization': `token ${token}` },
                 body: JSON.stringify({
-                    message: "Emergency Fix Update",
-                    content: btoa(unescape(encodeURIComponent(JSON.stringify(currentDB, null, 2)))),
-                    sha: currentDB.sha
+                    message: "Core Engine Update",
+                    content: btoa(unescape(encodeURIComponent(JSON.stringify(body, null, 2)))),
+                    sha: state.sha
                 })
             });
-            if(res.ok) alert("BERHASIL DISIMPAN!");
+            if(res.ok) { alert("PUSH SUCCESS"); location.reload(); }
         }
     </script>
 </body>
