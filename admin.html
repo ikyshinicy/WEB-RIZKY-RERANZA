@@ -2,58 +2,106 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Admin - Tuan Iky</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Admin Iky Shinicy</title>
     <style>
-        body { font-family: sans-serif; padding: 50px; background: #eee; }
-        .box { max-width: 600px; margin: auto; background: white; padding: 30px; border: 3px solid #000; }
-        input, textarea { width: 100%; margin: 10px 0; padding: 10px; border: 2px solid #000; }
-        button { background: #08A8F5; color: white; padding: 15px; width: 100%; border: 2px solid #000; font-weight: bold; cursor: pointer; }
+        body { font-family: sans-serif; display: flex; justify-content: center; padding: 20px; background: #f4f4f4; }
+        .card { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); width: 100%; max-width: 500px; }
+        input, textarea { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
+        button { width: 100%; padding: 15px; background: #00acee; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; margin-top: 10px; }
+        #status { margin-top: 15px; font-size: 14px; color: #333; font-weight: bold; }
+        .setup-section { background: #fffde7; padding: 15px; border-radius: 5px; margin-bottom: 20px; border: 1px solid #ffe082; }
     </style>
 </head>
 <body>
-    <div class="box">
+    <div class="card">
         <h2>Panel Admin Iky Shinicy</h2>
-        <input type="password" id="token" placeholder="GitHub Token">
-        <input type="text" id="repo" placeholder="username/repo-name">
+        
+        <div id="setup" class="setup-section">
+            <p style="margin-top:0"><b>Konfigurasi Awal (Cukup 1x):</b></p>
+            <input type="password" id="ghToken" placeholder="Masukkan Token ghp_ Tuan">
+            <button onclick="saveConfig()" style="background: #4caf50;">SIMPAN KUNCI</button>
+        </div>
+
         <hr>
-        <h3>Update Bio</h3>
-        <textarea id="new-bio" placeholder="Bio Baru"></textarea>
-        <button onclick="updateWebsite()">SIMPAN & PUBLISH</button>
-        <p id="status"></p>
+        
+        <label>Update Bio:</label>
+        <textarea id="new-bio" rows="4" placeholder="Ketik bio atau update bisnis di sini..."></textarea>
+        
+        <button onclick="updateWebsite()">SIMPAN & PUBLISH KE WEB</button>
+        <div id="status"></div>
+        
+        <p style="font-size: 10px; color: #aaa; margin-top: 20px; cursor: pointer;" onclick="clearConfig()">Reset Token</p>
     </div>
 
     <script>
+        const repo = "ikyshinicy/WEB-RIZKY-RERANZA";
+
+        // Cek apakah sudah ada token tersimpan di browser
+        window.onload = function() {
+            if (localStorage.getItem('myGithubToken')) {
+                document.getElementById('setup').style.display = 'none';
+                document.getElementById('status').innerText = "✅ Kunci Tersimpan Otomatis";
+            }
+        };
+
+        function saveConfig() {
+            const t = document.getElementById('ghToken').value;
+            if(t) {
+                localStorage.setItem('myGithubToken', t);
+                alert("Berhasil disimpan di browser ini! Tuan tidak perlu ketik lagi.");
+                location.reload();
+            }
+        }
+
+        function clearConfig() {
+            localStorage.removeItem('myGithubToken');
+            alert("Token dihapus. Silakan isi ulang.");
+            location.reload();
+        }
+
         async function updateWebsite() {
-            const token = document.getElementById('token').value;
-            const repo = document.getElementById('repo').value;
+            const token = localStorage.getItem('myGithubToken');
             const bio = document.getElementById('new-bio').value;
             const status = document.getElementById('status');
+            
+            if (!token) { status.innerText = "❌ Tuan belum masukkan token di atas!"; return; }
+            if (!bio) { status.innerText = "❌ Isi bio dulu, Tuan!"; return; }
 
-            status.innerText = "Menghubungkan ke GitHub...";
+            status.innerText = "⏳ Sedang memproses ke GitHub...";
 
             try {
-                // 1. Get current data.json
                 const url = `https://api.github.com/repos/${repo}/contents/data.json`;
-                const getRes = await fetch(url);
+                const getRes = await fetch(url, {
+                    headers: { 'Authorization': `token ${token}` }
+                });
+                
+                if (!getRes.ok) throw new Error("Gagal ambil data. Cek Token Tuan.");
+                
                 const fileData = await getRes.json();
-
-                // 2. Parse and Update
                 let content = JSON.parse(atob(fileData.content));
-                content.profile.bio = bio;
+                
+                // Update bagian bio
+                content.bio = bio;
 
-                // 3. Push back to GitHub
                 const putRes = await fetch(url, {
                     method: 'PUT',
-                    headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
+                    headers: { 
+                        'Authorization': `token ${token}`,
+                        'Content-Type': 'application/json' 
+                    },
                     body: JSON.stringify({
-                        message: "Update bio from Admin Panel",
+                        message: "Update dari Panel Admin Tuan Iky",
                         content: btoa(JSON.stringify(content, null, 2)),
                         sha: fileData.sha
                     })
                 });
 
-                if(putRes.ok) status.innerText = "BERHASIL! Website akan terupdate dalam 1 menit.";
-                else status.innerText = "Gagal: Periksa Token/Repo";
+                if(putRes.ok) {
+                    status.innerHTML = "<span style='color:green;'>🚀 BERHASIL! Cek web Tuan dlm 1 menit.</span>";
+                } else {
+                    status.innerHTML = "<span style='color:red;'>❌ GAGAL. Token mungkin salah.</span>";
+                }
             } catch (e) {
                 status.innerText = "Error: " + e.message;
             }
