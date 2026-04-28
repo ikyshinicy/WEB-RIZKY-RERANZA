@@ -3,151 +3,226 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Login - Iky Shinicy</title>
+    <title>Dashboard Admin - Iky Shinicy</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f2f5; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
-        .card { background: white; padding: 40px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 450px; }
-        h2 { text-align: center; color: #1c1e21; margin-bottom: 25px; }
-        label { font-weight: bold; display: block; margin-bottom: 5px; color: #4b4f56; }
-        input, textarea { width: 100%; padding: 12px; margin-bottom: 20px; border: 1px solid #dddfe2; border-radius: 6px; box-sizing: border-box; font-size: 16px; }
-        button { width: 100%; padding: 14px; background: #1877f2; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 16px; transition: background 0.3s; }
-        button:hover { background: #166fe5; }
-        .setup-section { background: #fffde7; padding: 15px; border-radius: 5px; margin-bottom: 20px; border: 1px solid #ffe082; font-size: 13px; }
-        .project-box { background: #f9f9f9; padding: 20px; border: 1px dashed #ccd0d5; margin-top: 20px; border-radius: 8px; }
-        #status { margin-top: 15px; font-weight: bold; text-align: center; color: #1877f2; }
-        #login-area, #admin-area { display: none; }
-        .logout-btn { background:#606770; margin-top:30px; padding:8px; font-size:12px; }
+        :root { --primary: #1877f2; --dark: #1c1e21; --bg: #f0f2f5; --white: #ffffff; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); margin: 0; display: flex; min-height: 100vh; }
+        
+        /* Sidebar ala WordPress */
+        .sidebar { width: 220px; background: var(--dark); color: white; display: flex; flex-direction: column; }
+        .sidebar-header { padding: 20px; font-weight: bold; font-size: 1.2rem; border-bottom: 1px solid #3e4146; text-align: center; }
+        .nav-item { padding: 15px 20px; cursor: pointer; display: flex; align-items: center; gap: 10px; transition: 0.3s; color: #ced4da; }
+        .nav-item:hover, .nav-item.active { background: var(--primary); color: white; }
+
+        /* Main Content */
+        .main { flex: 1; padding: 30px; overflow-y: auto; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .card { background: var(--white); padding: 25px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        
+        /* Form & UI */
+        input, textarea, select { width: 100%; padding: 12px; margin: 8px 0 15px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; font-size: 14px; }
+        .btn { padding: 12px 25px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.3s; }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-danger { background: #dc3545; color: white; margin-top: 5px; }
+
+        /* Tab Content */
+        .tab-content { display: none; animation: fadeIn 0.5s; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* Project List */
+        .project-item { display: flex; align-items: center; gap: 15px; padding: 15px; border: 1px solid #eee; border-radius: 8px; margin-bottom: 10px; }
+        .project-item img { width: 60px; height: 60px; object-fit: cover; border-radius: 4px; }
+        .project-info { flex: 1; }
+        
+        #login-overlay { position: fixed; inset: 0; background: var(--bg); display: flex; justify-content: center; align-items: center; z-index: 1000; }
     </style>
 </head>
 <body>
 
-    <div class="card">
-        <div id="login-area">
-            <h2>Admin Login</h2>
-            <label>Username</label>
-            <input type="text" id="user" placeholder="Username Tuan">
-            <label>Password</label>
-            <input type="password" id="pass" placeholder="Password Tuan">
-            <button onclick="checkLogin()">MASUK</button>
-            <p id="login-error" style="color:red; text-align:center; font-size:13px; margin-top:10px;"></p>
+    <div id="login-overlay">
+        <div class="card" style="width: 350px;">
+            <h2 style="text-align:center">Admin Login</h2>
+            <input type="text" id="user" placeholder="Username">
+            <input type="password" id="pass" placeholder="Password">
+            <button class="btn btn-primary" style="width:100%" onclick="login()">Masuk</button>
+        </div>
+    </div>
+
+    <div class="sidebar">
+        <div class="sidebar-header">IKY DIGITAL</div>
+        <div class="nav-item active" onclick="openTab(event, 'tab-profile')"><i class="fa fa-user"></i> Profil & Bio</div>
+        <div class="nav-item" onclick="openTab(event, 'tab-add')"><i class="fa fa-plus-circle"></i> Tambah Konten</div>
+        <div class="nav-item" onclick="openTab(event, 'tab-list')"><i class="fa fa-list"></i> Kelola Portofolio</div>
+        <div class="nav-item" onclick="openTab(event, 'tab-token')"><i class="fa fa-key"></i> API Token</div>
+        <div class="nav-item" onclick="logout()" style="margin-top: auto; border-top: 1px solid #3e4146;"><i class="fa fa-sign-out"></i> Logout</div>
+    </div>
+
+    <div class="main">
+        <div id="status" style="position: sticky; top: 0; z-index: 99; margin-bottom: 10px;"></div>
+
+        <div id="tab-profile" class="tab-content active">
+            <div class="card">
+                <h2>Profil & Branding</h2>
+                <label>Nama Profesional</label>
+                <input type="text" id="upd-name" placeholder="Nama Anda">
+                <label>Bio / Slogan Bisnis</label>
+                <textarea id="upd-bio" rows="4"></textarea>
+                <button class="btn btn-primary" onclick="saveChanges()">Update Profil</button>
+            </div>
         </div>
 
-        <div id="admin-area">
-            <h2>Dashboard Admin</h2>
-            <p style="color: #28a745; font-size: 13px; text-align:center;">✅ Login Berhasil, Tuan Iky</p>
-            
-            <div id="setup-token" class="setup-section" style="display:none;">
-                <p><b>Konfigurasi GitHub Token (Cukup 1x):</b></p>
-                <input type="password" id="ghToken" placeholder="Masukkan Token ghp_">
-                <button onclick="saveToken()" style="background: #4caf50;">SIMPAN KUNCI GITHUB</button>
+        <div id="tab-add" class="tab-content">
+            <div class="card">
+                <h2>Tambah Konten Baru (Foto/Video)</h2>
+                <label>Judul Karya</label>
+                <input type="text" id="p-title" placeholder="Misal: Spanduk Toko Papua">
+                <label>Tipe Konten</label>
+                <select id="p-type">
+                    <option value="image">Gambar / Foto</option>
+                    <option value="video">Link Video (YouTube/Lainnya)</option>
+                </select>
+                <label>URL Gambar/Thumbnail</label>
+                <input type="text" id="p-img" placeholder="https://link-gambar.jpg">
+                <label>Link Tujuan (Opsional)</label>
+                <input type="text" id="p-link" placeholder="Link ke WA atau Detail">
+                <button class="btn btn-primary" onclick="saveChanges('add')">Publikasikan Sekarang</button>
             </div>
+        </div>
 
-            <label>Update Nama Profil:</label>
-            <input type="text" id="user-name" placeholder="Contoh: Iky Shinicy Branding">
-
-            <label>Update Bio Bisnis:</label>
-            <textarea id="new-bio" rows="3" placeholder="Tulis bio atau promo cetakan..."></textarea>
-
-            <div class="project-box">
-                <p style="margin-top:0"><b>Tambah Project/Karya Baru:</b></p>
-                <input type="text" id="p-title" placeholder="Nama Produk">
-                <input type="text" id="p-img" placeholder="Link Gambar/Foto">
-                <input type="text" id="p-link" placeholder="Link Pesan (WA)">
+        <div id="tab-list" class="tab-content">
+            <div class="card">
+                <h2>Semua Portofolio</h2>
+                <p>Berikut adalah daftar karya yang tampil di website Tuan.</p>
+                <div id="project-list-container">
+                    <p>Loading data...</p>
+                </div>
             </div>
-            
-            <button onclick="updateWebsite()">SIMPAN PERUBAHAN</button>
-            <div id="status"></div>
-            
-            <button onclick="logout()" class="logout-btn">LOGOUT</button>
+        </div>
+
+        <div id="tab-token" class="tab-content">
+            <div class="card">
+                <h2>GitHub API Token</h2>
+                <p>Token ini untuk akses otomatis ke website Tuan.</p>
+                <input type="password" id="ghToken" placeholder="Masukkan ghp_ token Tuan">
+                <button class="btn btn-primary" onclick="saveToken()">Simpan Token di Browser</button>
+            </div>
         </div>
     </div>
 
     <script>
-        // DATA LOGIN TUAN IKY
-        const USERNAME_ADMIN = "admin"; 
-        const PASSWORD_ADMIN = "eky598939"; // Password sudah diupdate
-        const REPO_PATH = "ikyshinicy/WEB-RIZKY-RERANZA";
+        const REPO = "ikyshinicy/WEB-RIZKY-RERANZA";
+        let dbData = { name: "", bio: "", projects: [] };
 
-        window.onload = function() {
-            if (sessionStorage.getItem('isLoggedIn') === 'true') {
-                showAdmin();
-            } else {
-                document.getElementById('login-area').style.display = 'block';
-            }
-        };
-
-        function checkLogin() {
+        // 1. LOGIN SYSTEM
+        function login() {
             const u = document.getElementById('user').value;
             const p = document.getElementById('pass').value;
-            if (u === USERNAME_ADMIN && p === PASSWORD_ADMIN) {
-                sessionStorage.setItem('isLoggedIn', 'true');
-                showAdmin();
-            } else {
-                document.getElementById('login-error').innerText = "Username atau Password Salah!";
-            }
+            if(u === 'admin' && p === 'eky598939') {
+                document.getElementById('login-overlay').style.display = 'none';
+                sessionStorage.setItem('iky_auth', 'true');
+                loadData();
+            } else { alert("Salah Tuan!"); }
         }
 
-        function showAdmin() {
-            document.getElementById('login-area').style.display = 'none';
-            document.getElementById('admin-area').style.display = 'block';
-            if (!localStorage.getItem('myGithubToken')) {
-                document.getElementById('setup-token').style.display = 'block';
+        if(sessionStorage.getItem('iky_auth')) { document.getElementById('login-overlay').style.display = 'none'; loadData(); }
+
+        function logout() { sessionStorage.clear(); location.reload(); }
+
+        // 2. NAVIGATION
+        function openTab(evt, tabName) {
+            let i, content, items;
+            content = document.getElementsByClassName("tab-content");
+            for (i = 0; i < content.length; i++) content[i].classList.remove("active");
+            items = document.getElementsByClassName("nav-item");
+            for (i = 0; i < items.length; i++) items[i].classList.remove("active");
+            document.getElementById(tabName).classList.add("active");
+            evt.currentTarget.classList.add("active");
+        }
+
+        // 3. DATA HANDLER
+        async function loadData() {
+            const token = localStorage.getItem('myGithubToken');
+            if(!token) return;
+            try {
+                const res = await fetch(`https://api.github.com/repos/${REPO}/contents/data.json`, {
+                    headers: { 'Authorization': `token ${token}` }
+                });
+                const json = await res.json();
+                dbData = JSON.parse(atob(json.content));
+                dbData.sha = json.sha;
+                
+                document.getElementById('upd-name').value = dbData.name;
+                document.getElementById('upd-bio').value = dbData.bio;
+                renderList();
+            } catch (e) { console.error("Gagal load"); }
+        }
+
+        function renderList() {
+            const container = document.getElementById('project-list-container');
+            container.innerHTML = "";
+            dbData.projects.forEach((p, index) => {
+                container.innerHTML += `
+                    <div class="project-item">
+                        <img src="${p.image}" onerror="this.src='https://via.placeholder.com/60?text=VIDEO'">
+                        <div class="project-info">
+                            <strong>${p.title}</strong><br>
+                            <small>${p.link}</small>
+                        </div>
+                        <button class="btn btn-danger" onclick="deleteProject(${index})"><i class="fa fa-trash"></i></button>
+                    </div>
+                `;
+            });
+        }
+
+        async function saveChanges(mode) {
+            const token = localStorage.getItem('myGithubToken');
+            const status = document.getElementById('status');
+            if(!token) { alert("Isi Token dulu di Tab Token!"); return; }
+
+            status.innerHTML = "<div class='card' style='background:#fff3cd'>⏳ Memproses ke GitHub...</div>";
+
+            if(mode === 'add') {
+                const newItem = {
+                    title: document.getElementById('p-title').value,
+                    image: document.getElementById('p-img').value,
+                    link: document.getElementById('p-link').value,
+                    type: document.getElementById('p-type').value
+                };
+                dbData.projects.unshift(newItem);
+            } else {
+                dbData.name = document.getElementById('upd-name').value;
+                dbData.bio = document.getElementById('upd-bio').value;
+            }
+
+            try {
+                const res = await fetch(`https://api.github.com/repos/${REPO}/contents/data.json`, {
+                    method: 'PUT',
+                    headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        message: "Update Content via Dashboard Pro",
+                        content: btoa(JSON.stringify({name: dbData.name, bio: dbData.bio, projects: dbData.projects}, null, 2)),
+                        sha: dbData.sha
+                    })
+                });
+                if(res.ok) {
+                    status.innerHTML = "<div class='card' style='background:#d4edda; color:#155724'>✅ Berhasil Terbit! Web terupdate dlm 1 menit.</div>";
+                    loadData();
+                }
+            } catch (e) { status.innerHTML = "Error!"; }
+        }
+
+        function deleteProject(index) {
+            if(confirm("Hapus konten ini, Tuan Iky?")) {
+                dbData.projects.splice(index, 1);
+                saveChanges();
             }
         }
 
         function saveToken() {
             const t = document.getElementById('ghToken').value;
-            if(t) { localStorage.setItem('myGithubToken', t); location.reload(); }
-        }
-
-        function logout() {
-            sessionStorage.removeItem('isLoggedIn');
-            location.reload();
-        }
-
-        async function updateWebsite() {
-            const token = localStorage.getItem('myGithubToken');
-            const name = document.getElementById('user-name').value;
-            const bio = document.getElementById('new-bio').value;
-            const pTitle = document.getElementById('p-title').value;
-            const pImg = document.getElementById('p-img').value;
-            const pLink = document.getElementById('p-link').value;
-            const status = document.getElementById('status');
-
-            if(!token) { status.innerText = "Isi Token GitHub dulu di kotak kuning!"; return; }
-            status.innerText = "⏳ Memproses perubahan...";
-
-            try {
-                const url = `https://api.github.com/repos/${REPO_PATH}/contents/data.json`;
-                const getRes = await fetch(url, { headers: { 'Authorization': `token ${token}` } });
-                const fileData = await getRes.json();
-                let content = JSON.parse(atob(fileData.content));
-
-                if(name) content.name = name;
-                if(bio) content.bio = bio;
-                if(pTitle && pImg) {
-                    if(!content.projects) content.projects = [];
-                    content.projects.unshift({ title: pTitle, image: pImg, link: pLink || "#" });
-                }
-
-                const putRes = await fetch(url, {
-                    method: 'PUT',
-                    headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        message: "Update Konten by Tuan Iky",
-                        content: btoa(JSON.stringify(content, null, 2)),
-                        sha: fileData.sha
-                    })
-                });
-
-                if(putRes.ok) {
-                    status.innerHTML = "<span style='color:green;'>🚀 BERHASIL! Web akan terupdate dalam 1 menit.</span>";
-                    document.getElementById('p-title').value = "";
-                    document.getElementById('p-img').value = "";
-                }
-            } catch (e) {
-                status.innerText = "Error: " + e.message;
-            }
+            if(t) { localStorage.setItem('myGithubToken', t); alert("Token Disimpan!"); location.reload(); }
         }
     </script>
 </body>
