@@ -3,104 +3,147 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel Admin Iky Shinicy</title>
+    <title>Admin Login - Iky Shinicy</title>
     <style>
-        body { font-family: sans-serif; display: flex; justify-content: center; padding: 20px; background: #f4f4f4; }
-        .card { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); width: 100%; max-width: 500px; }
-        input, textarea { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
-        button { width: 100%; padding: 15px; background: #00acee; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; margin-top: 10px; }
-        #status { margin-top: 15px; font-size: 14px; color: #333; font-weight: bold; }
-        .setup-section { background: #fffde7; padding: 15px; border-radius: 5px; margin-bottom: 20px; border: 1px solid #ffe082; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f2f5; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        .card { background: white; padding: 40px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 450px; }
+        h2 { text-align: center; color: #1c1e21; margin-bottom: 25px; }
+        label { font-weight: bold; display: block; margin-bottom: 5px; color: #4b4f56; }
+        input, textarea { width: 100%; padding: 12px; margin-bottom: 20px; border: 1px solid #dddfe2; border-radius: 6px; box-sizing: border-box; font-size: 16px; }
+        button { width: 100%; padding: 14px; background: #1877f2; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 16px; transition: background 0.3s; }
+        button:hover { background: #166fe5; }
+        .setup-section { background: #fffde7; padding: 15px; border-radius: 5px; margin-bottom: 20px; border: 1px solid #ffe082; font-size: 13px; }
+        .project-box { background: #f9f9f9; padding: 20px; border: 1px dashed #ccd0d5; margin-top: 20px; border-radius: 8px; }
+        #status { margin-top: 15px; font-weight: bold; text-align: center; color: #1877f2; }
+        #login-area, #admin-area { display: none; }
+        .logout-btn { background:#606770; margin-top:30px; padding:8px; font-size:12px; }
     </style>
 </head>
 <body>
+
     <div class="card">
-        <h2>Panel Admin Iky Shinicy</h2>
-        
-        <div id="setup" class="setup-section">
-            <p style="margin-top:0"><b>Konfigurasi Awal (Cukup 1x):</b></p>
-            <input type="password" id="ghToken" placeholder="Masukkan Token ghp_ Tuan">
-            <button onclick="saveConfig()" style="background: #4caf50;">SIMPAN KUNCI</button>
+        <div id="login-area">
+            <h2>Admin Login</h2>
+            <label>Username</label>
+            <input type="text" id="user" placeholder="Username Tuan">
+            <label>Password</label>
+            <input type="password" id="pass" placeholder="Password Tuan">
+            <button onclick="checkLogin()">MASUK</button>
+            <p id="login-error" style="color:red; text-align:center; font-size:13px; margin-top:10px;"></p>
         </div>
 
-        <hr>
-        
-        <label>Update Bio:</label>
-        <textarea id="new-bio" rows="4" placeholder="Ketik bio atau update bisnis di sini..."></textarea>
-        
-        <button onclick="updateWebsite()">SIMPAN & PUBLISH KE WEB</button>
-        <div id="status"></div>
-        
-        <p style="font-size: 10px; color: #aaa; margin-top: 20px; cursor: pointer;" onclick="clearConfig()">Reset Token</p>
+        <div id="admin-area">
+            <h2>Dashboard Admin</h2>
+            <p style="color: #28a745; font-size: 13px; text-align:center;">✅ Login Berhasil, Tuan Iky</p>
+            
+            <div id="setup-token" class="setup-section" style="display:none;">
+                <p><b>Konfigurasi GitHub Token (Cukup 1x):</b></p>
+                <input type="password" id="ghToken" placeholder="Masukkan Token ghp_">
+                <button onclick="saveToken()" style="background: #4caf50;">SIMPAN KUNCI GITHUB</button>
+            </div>
+
+            <label>Update Nama Profil:</label>
+            <input type="text" id="user-name" placeholder="Contoh: Iky Shinicy Branding">
+
+            <label>Update Bio Bisnis:</label>
+            <textarea id="new-bio" rows="3" placeholder="Tulis bio atau promo cetakan..."></textarea>
+
+            <div class="project-box">
+                <p style="margin-top:0"><b>Tambah Project/Karya Baru:</b></p>
+                <input type="text" id="p-title" placeholder="Nama Produk">
+                <input type="text" id="p-img" placeholder="Link Gambar/Foto">
+                <input type="text" id="p-link" placeholder="Link Pesan (WA)">
+            </div>
+            
+            <button onclick="updateWebsite()">SIMPAN PERUBAHAN</button>
+            <div id="status"></div>
+            
+            <button onclick="logout()" class="logout-btn">LOGOUT</button>
+        </div>
     </div>
 
     <script>
-        const repo = "ikyshinicy/WEB-RIZKY-RERANZA";
+        // DATA LOGIN TUAN IKY
+        const USERNAME_ADMIN = "admin"; 
+        const PASSWORD_ADMIN = "eky598939"; // Password sudah diupdate
+        const REPO_PATH = "ikyshinicy/WEB-RIZKY-RERANZA";
 
-        // Cek apakah sudah ada token tersimpan di browser
         window.onload = function() {
-            if (localStorage.getItem('myGithubToken')) {
-                document.getElementById('setup').style.display = 'none';
-                document.getElementById('status').innerText = "✅ Kunci Tersimpan Otomatis";
+            if (sessionStorage.getItem('isLoggedIn') === 'true') {
+                showAdmin();
+            } else {
+                document.getElementById('login-area').style.display = 'block';
             }
         };
 
-        function saveConfig() {
-            const t = document.getElementById('ghToken').value;
-            if(t) {
-                localStorage.setItem('myGithubToken', t);
-                alert("Berhasil disimpan di browser ini! Tuan tidak perlu ketik lagi.");
-                location.reload();
+        function checkLogin() {
+            const u = document.getElementById('user').value;
+            const p = document.getElementById('pass').value;
+            if (u === USERNAME_ADMIN && p === PASSWORD_ADMIN) {
+                sessionStorage.setItem('isLoggedIn', 'true');
+                showAdmin();
+            } else {
+                document.getElementById('login-error').innerText = "Username atau Password Salah!";
             }
         }
 
-        function clearConfig() {
-            localStorage.removeItem('myGithubToken');
-            alert("Token dihapus. Silakan isi ulang.");
+        function showAdmin() {
+            document.getElementById('login-area').style.display = 'none';
+            document.getElementById('admin-area').style.display = 'block';
+            if (!localStorage.getItem('myGithubToken')) {
+                document.getElementById('setup-token').style.display = 'block';
+            }
+        }
+
+        function saveToken() {
+            const t = document.getElementById('ghToken').value;
+            if(t) { localStorage.setItem('myGithubToken', t); location.reload(); }
+        }
+
+        function logout() {
+            sessionStorage.removeItem('isLoggedIn');
             location.reload();
         }
 
         async function updateWebsite() {
             const token = localStorage.getItem('myGithubToken');
+            const name = document.getElementById('user-name').value;
             const bio = document.getElementById('new-bio').value;
+            const pTitle = document.getElementById('p-title').value;
+            const pImg = document.getElementById('p-img').value;
+            const pLink = document.getElementById('p-link').value;
             const status = document.getElementById('status');
-            
-            if (!token) { status.innerText = "❌ Tuan belum masukkan token di atas!"; return; }
-            if (!bio) { status.innerText = "❌ Isi bio dulu, Tuan!"; return; }
 
-            status.innerText = "⏳ Sedang memproses ke GitHub...";
+            if(!token) { status.innerText = "Isi Token GitHub dulu di kotak kuning!"; return; }
+            status.innerText = "⏳ Memproses perubahan...";
 
             try {
-                const url = `https://api.github.com/repos/${repo}/contents/data.json`;
-                const getRes = await fetch(url, {
-                    headers: { 'Authorization': `token ${token}` }
-                });
-                
-                if (!getRes.ok) throw new Error("Gagal ambil data. Cek Token Tuan.");
-                
+                const url = `https://api.github.com/repos/${REPO_PATH}/contents/data.json`;
+                const getRes = await fetch(url, { headers: { 'Authorization': `token ${token}` } });
                 const fileData = await getRes.json();
                 let content = JSON.parse(atob(fileData.content));
-                
-                // Update bagian bio
-                content.bio = bio;
+
+                if(name) content.name = name;
+                if(bio) content.bio = bio;
+                if(pTitle && pImg) {
+                    if(!content.projects) content.projects = [];
+                    content.projects.unshift({ title: pTitle, image: pImg, link: pLink || "#" });
+                }
 
                 const putRes = await fetch(url, {
                     method: 'PUT',
-                    headers: { 
-                        'Authorization': `token ${token}`,
-                        'Content-Type': 'application/json' 
-                    },
+                    headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        message: "Update dari Panel Admin Tuan Iky",
+                        message: "Update Konten by Tuan Iky",
                         content: btoa(JSON.stringify(content, null, 2)),
                         sha: fileData.sha
                     })
                 });
 
                 if(putRes.ok) {
-                    status.innerHTML = "<span style='color:green;'>🚀 BERHASIL! Cek web Tuan dlm 1 menit.</span>";
-                } else {
-                    status.innerHTML = "<span style='color:red;'>❌ GAGAL. Token mungkin salah.</span>";
+                    status.innerHTML = "<span style='color:green;'>🚀 BERHASIL! Web akan terupdate dalam 1 menit.</span>";
+                    document.getElementById('p-title').value = "";
+                    document.getElementById('p-img').value = "";
                 }
             } catch (e) {
                 status.innerText = "Error: " + e.message;
